@@ -1,9 +1,18 @@
-name: Publish to npm
+# Manual Publish (Backup)
+# This workflow runs on manual version tags if semantic-release isn't used.
+# Primary releases now use .github/workflows/release.yml with semantic-release.
+
+name: Publish to npm (Manual)
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (without v prefix)'
+        required: true
 
 jobs:
   publish:
