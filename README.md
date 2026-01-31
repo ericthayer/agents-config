@@ -100,7 +100,7 @@ Detailed operational guidelines for specific development tasks:
 - **`github-issue.instructions.md`** - Process for creating and managing GitHub issues
 - **`github-release-notes.instructions.md`** - Guidelines for writing release notes
 - **`mui.instructions.md`** - Material-UI (MUI v7+) specific patterns, theming, and dark mode implementation
-- **`storybook.instructions.md`** - Setting up and maintaining Storybook v10 documentation
+- **`storybook.instructions.md`** - Setting up and maintaining Storybook v10.2 documentation
 - **`web-interface-guidelines.instructions.md`** - Accessibility and UX standards for web interfaces
 
 ### 📂 `rules/`
@@ -148,7 +148,7 @@ Implement Google Gemini API integration with:
 - Loading and streaming UI states
 - Attribution and safety requirements
 
-#### **`vercel-react-best-practices/`**
+#### **`vercel-react-best-practices/`** (Optional via `npx add-skill vercel-labs/agent-skills`)
 Performance optimization guidelines from Vercel Engineering. Covers 45+ rules across 8 categories:
 - Eliminating waterfalls (async patterns)
 - Bundle size optimization
@@ -158,6 +158,11 @@ Performance optimization guidelines from Vercel Engineering. Covers 45+ rules ac
 - Re-render prevention
 - Event handling and refs
 - JavaScript optimization
+
+**Installation:**
+```bash
+npx add-skill vercel-labs/agent-skills
+```
 
 Includes subdirectories:
 - **`rules/`** - Individual rule documents (45+ files organized by category)
@@ -181,7 +186,7 @@ Reference the appropriate skill or rule based on the development task:
 - Use `accessibility-audit` before marking features complete
 - Use `scaffold-component` when creating new components
 - Use `integrate-gemini` for AI feature implementation
-- Reference `vercel-react-best-practices` for performance optimization
+- Install and reference `vercel-react-best-practices` for performance optimization (optional: `npx add-skill vercel-labs/agent-skills`)
 
 ### For Developers
 - Start with [AGENTS.md](AGENTS.md) for core principles
