@@ -100,7 +100,7 @@ Detailed operational guidelines for specific development tasks:
 - **`github-issue.instructions.md`** - Process for creating and managing GitHub issues
 - **`github-release-notes.instructions.md`** - Guidelines for writing release notes
 - **`mui.instructions.md`** - Material-UI (MUI v7+) specific patterns, theming, and dark mode implementation
-- **`storybook.instructions.md`** - Setting up and maintaining Storybook documentation
+- **`storybook.instructions.md`** - Setting up and maintaining Storybook v10 documentation
 - **`web-interface-guidelines.instructions.md`** - Accessibility and UX standards for web interfaces
 
 ### 📂 `rules/`
