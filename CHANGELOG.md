@@ -1,3 +1,11 @@
+# 1.0.0 (2026-01-31)
+
+
+### Performance Improvements
+
+* generalized documentation, updated core set of files ([b152c6a](https://github.com/ericthayer/agents-config/commit/b152c6a4582898aec90891e533fb9e4b983ffd06))
+* setup semantic release ([a59f934](https://github.com/ericthayer/agents-config/commit/a59f93463772e4042da97eef128f36d62b1d7c0c))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
