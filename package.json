@@ -1,0 +1,56 @@
+{
+  "name": "agents-config",
+  "version": "1.0.0",
+  "description": "A comprehensive knowledge base and skill library for building production-grade React applications with AI-powered tools and best practices.",
+  "author": "Eric Thayer",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericthayer/agents-config.git"
+  },
+  "homepage": "https://github.com/ericthayer/agents-config#readme",
+  "bugs": {
+    "url": "https://github.com/ericthayer/agents-config/issues"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "copilot",
+    "claude",
+    "gemini",
+    "cursor",
+    "react",
+    "typescript",
+    "accessibility",
+    "performance",
+    "development-tools",
+    "code-generation",
+    "agentic-workflows"
+  ],
+  "type": "module",
+  "bin": {
+    "agents-init": "./bin/agents-init.js"
+  },
+  "files": [
+    "AGENTS.md",
+    "README.md",
+    "bin/",
+    "adapters/",
+    "instructions/",
+    "rules/",
+    "skills/",
+    "prompts/",
+    "schemas/"
+  ],
+  "scripts": {
+    "postinstall": "node ./bin/postinstall.js",
+    "test": "node ./bin/agents-init.js --dry-run",
+    "prepare": "echo 'Ready to publish'"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

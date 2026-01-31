@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+*.log
+.npm/
+.vscode/
+.skill-lock.json
+.env
+.env.local
+*.tgz
+
+# Test directories (will be created for testing)
+test-app/

@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/ericthayer/agents-config/main/schemas/agents-project.schema.json",
+  "title": "Agents Project Configuration",
+  "description": "Configuration schema for project-specific AI agent settings",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "description": "Configuration version (semver)",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "project": {
+      "type": "object",
+      "description": "Project metadata",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Project name"
+        },
+        "framework": {
+          "type": "string",
+          "enum": ["next", "react", "remix", "astro", "vue", "svelte", "other"],
+          "description": "Primary framework"
+        },
+        "styling": {
+          "type": "string",
+          "enum": ["tailwind", "mui", "vanilla", "styled", "emotion", "css-modules", "other"],
+          "description": "Styling approach"
+        },
+        "database": {
+          "type": "string",
+          "enum": ["supabase", "firebase", "prisma", "drizzle", "none", "other"],
+          "description": "Database/backend"
+        }
+      },
+      "required": ["name"]
+    },
+    "agents": {
+      "type": "array",
+      "description": "AI agents to configure",
+      "items": {
+        "type": "string",
+        "enum": ["copilot", "claude", "cursor", "gemini", "codex", "windsurf"]
+      }
+    },
+    "rules": {
+      "type": "object",
+      "description": "Rule configuration",
+      "properties": {
+        "include": {
+          "type": "array",
+          "description": "Rules to include (by filename without extension)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Rules to exclude",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "overrides": {
+      "type": "object",
+      "description": "Project-specific rule overrides",
+      "additionalProperties": true
+    }
+  },
+  "required": ["version", "project"]
+}
