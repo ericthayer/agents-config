@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/ericthayer/agents-config/compare/v1.1.0...v1.1.1) (2026-01-31)
+
+
+### Bug Fixes
+
+* remove vercel-react-best-practices from package ([dd9975a](https://github.com/ericthayer/agents-config/commit/dd9975ae2fb2ff3d6d25f2dbdac74f75181d1c4e))
+* remove vercel-react-best-practices from package ([45d330d](https://github.com/ericthayer/agents-config/commit/45d330d1dffec146db962a932e6ba9133b3bf9da))
+* update readme with correct information ([e7146fd](https://github.com/ericthayer/agents-config/commit/e7146fd3db134b498568358cede4b868e34cdbe1))
+
 # 1.0.0 (2026-01-31)
 
 
