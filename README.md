@@ -3,7 +3,11 @@
 A comprehensive knowledge base and skill library for building production-grade React applications with AI-powered tools and best practices.
 
 [![npm version](https://img.shields.io/npm/v/agents-config.svg)](https://www.npmjs.com/package/agents-config)
+[![npm downloads](https://img.shields.io/npm/dm/agents-config.svg)](https://www.npmjs.com/package/agents-config)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/ericthayer/agents-config.svg)](https://github.com/ericthayer/agents-config/stargazers)
+[![Node.js](https://img.shields.io/node/v/agents-config.svg)](https://nodejs.org/)
+[![CI](https://github.com/ericthayer/agents-config/actions/workflows/ci.yml/badge.svg)](https://github.com/ericthayer/agents-config/actions/workflows/ci.yml)
 
 ## Overview
 

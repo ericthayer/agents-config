@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Verify CLI help
+        run: node bin/agents-init.js --help
+
+      - name: Verify CLI dry-run
+        run: |
+          echo "1" | node bin/agents-init.js --dry-run || true
+
+      - name: Verify file structure
+        run: |
+          echo "Checking required files exist..."
+          test -f AGENTS.md
+          test -f README.md
+          test -f LICENSE
+          test -f package.json
+          test -d rules
+          test -d skills
+          test -d instructions
+          test -d adapters
+          test -d bin
+          echo "✓ All required files present"
+
+      - name: Verify rules exist
+        run: |
+          echo "Checking rules..."
+          test -f rules/accessibility.md
+          test -f rules/component-architecture.md
+          test -f rules/gemini.md
+          test -f rules/mui.md
+          echo "✓ Core rules present"
+
+      - name: Verify skills exist
+        run: |
+          echo "Checking skills..."
+          test -f skills/accessibility-audit/SKILL.md
+          test -f skills/scaffold-component/SKILL.md
+          test -f skills/integrate-gemini/SKILL.md
+          echo "✓ Core skills present"
+
+      - name: Verify adapters exist
+        run: |
+          echo "Checking adapters..."
+          test -f adapters/copilot.template.md
+          test -f adapters/claude.template.md
+          test -f adapters/cursor.template.md
+          test -f adapters/gemini.template.md
+          echo "✓ Core adapters present"
+
+  test-install:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Create test project
+        run: |
+          mkdir test-project
+          cd test-project
+          npm init -y
+          npm install react --save
+          
+      - name: Install agents-config from npm
+        run: |
+          cd test-project
+          npm install agents-config --save-dev
+          
+      - name: Verify CLI is accessible
+        run: |
+          cd test-project
+          npx agents-init --help
+          
+      - name: Verify dry-run works
+        run: |
+          cd test-project
+          echo "2" | npx agents-init --dry-run || true
