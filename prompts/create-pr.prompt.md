@@ -12,7 +12,7 @@ Analyze the last git commit and create a comprehensive PR description.
 1. **Get the latest commit details:**
    - Use `mcp_github_get_commit` with:
      - owner: `ericthayer`
-     - repo: `devlog`
+     - repo: `agents-config`
      - sha: Get from `git log -1 --pretty=format:"%H"`
      - include_diff: `true`
 
@@ -66,7 +66,7 @@ gh pr create \
 See `.github/GITHUB_AUTH_SETUP.md` for authentication setup.
 
 ## Context
-- Repository: github.com/ericthayer/devlog
+- Repository: github.com/ericthayer/agents-config
 - Default base branch: `main`
 - See `.github/pr-template-commits.md` for reusable PR description template
 - See `.github/GITHUB_AUTH_SETUP.md` for GitHub authentication guide

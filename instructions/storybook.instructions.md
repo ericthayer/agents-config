@@ -5,7 +5,7 @@ Provide project context and coding guidelines that AI should follow when generat
 
 # /build.storybook - Scaffold Storybook Story
 
-Generate a Storybook story file following the DevLog application patterns.
+Generate a Storybook story file following the Application Development patterns.
 
 ## Usage
 - `/build.storybook ComponentName` - Creates basic story with Primary/Secondary variants

@@ -4,7 +4,7 @@ applyTo: '**/*.md, **/*.mdx'
 
 # GitHub Issue Creation Instructions
 
-Use these instructions to create well-structured, comprehensive GitHub issues for the DevLog application.
+Use these instructions to create well-structured, comprehensive GitHub issues for the Application Development.
 
 ## Issue Structure Template
 

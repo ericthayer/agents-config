@@ -4,7 +4,7 @@ applyTo: '**/*.md, **/*.mdx'
 
 # GitHub Release Notes Instructions
 
-This document provides comprehensive instructions for creating professional, well-structured GitHub release notes for the DevLog application. Release notes are published in two formats: a **detailed version** and a **summary version**.
+This document provides comprehensive instructions for creating professional, well-structured GitHub release notes for the Application Development. Release notes are published in two formats: a **detailed version** and a **summary version**.
 
 ## File Naming and Location
 

@@ -96,13 +96,13 @@ const DATABASES = {
 };
 
 // Core rules always included
-const CORE_RULES = ['accessibility', 'component-architecture', 'spec-driven-development'];
+const CORE_RULES = ['accessibility', 'component-architecture', 'spec-driven-development', 'web-performance'];
 
 // Core skills always included
 const CORE_SKILLS = ['accessibility-audit', 'scaffold-component'];
 
 // Core instructions always included
-const CORE_INSTRUCTIONS = ['development-standards'];
+const CORE_INSTRUCTIONS = ['development-standards', 'web-interface-guidelines'];
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -291,8 +291,7 @@ function determineSkills(config) {
   
   if (config.gemini) skills.push('integrate-gemini');
   
-  // Always include vercel-react-best-practices (just the SKILL.md, not full rules subfolder)
-  skills.push('vercel-react-best-practices');
+  // Additional skills can be installed via: npx add-skill vercel-labs/agent-skills
   
   return skills;
 }
@@ -403,37 +402,13 @@ function copyAgentsFolder(projectDir, config, filesToCreate) {
     const destDir = path.join(agentsDir, 'skills', skill);
     
     if (fs.existsSync(srcDir)) {
-      // For vercel-react-best-practices, only copy SKILL.md and AGENTS.md (not the huge rules subfolder)
-      if (skill === 'vercel-react-best-practices') {
-        const skillMdSrc = path.join(srcDir, 'SKILL.md');
-        const skillMdDest = path.join(destDir, 'SKILL.md');
-        if (fs.existsSync(skillMdSrc)) {
-          filesToCreate.push({
-            src: skillMdSrc,
-            dest: skillMdDest,
-            relativePath: `.agents/skills/${skill}/SKILL.md`,
-            type: 'file',
-          });
-        }
-        const agentsMdSrc2 = path.join(srcDir, 'AGENTS.md');
-        const agentsMdDest2 = path.join(destDir, 'AGENTS.md');
-        if (fs.existsSync(agentsMdSrc2)) {
-          filesToCreate.push({
-            src: agentsMdSrc2,
-            dest: agentsMdDest2,
-            relativePath: `.agents/skills/${skill}/AGENTS.md`,
-            type: 'file',
-          });
-        }
-      } else {
-        // Copy entire skill folder
-        filesToCreate.push({
-          src: srcDir,
-          dest: destDir,
-          relativePath: `.agents/skills/${skill}/`,
-          type: 'folder',
-        });
-      }
+      // Copy entire skill folder
+      filesToCreate.push({
+        src: srcDir,
+        dest: destDir,
+        relativePath: `.agents/skills/${skill}/`,
+        type: 'folder',
+      });
     }
   }
   
@@ -678,6 +653,11 @@ ${colors.cyan}Next steps:${colors.reset}
 1. Review the files in .agents/ and customize as needed
 2. Commit the .agents/ folder and adapter files to git
 3. Your AI agents will now follow consistent guidelines
+
+${colors.cyan}Optional skills:${colors.reset}
+
+  ${colors.bright}npx add-skill vercel-labs/agent-skills${colors.reset}
+    Install Vercel's React best practices (45+ performance rules)
 
 ${colors.cyan}Useful commands:${colors.reset}
 

@@ -57,7 +57,7 @@ The mcp_github tools require a GitHub personal access token (PAT) via environmen
 
 1. Go to: https://github.com/settings/tokens/new
 2. Fill in:
-   - **Token name**: `devlog-mcp`
+   - **Token name**: `your-mcp`
    - **Expiration**: 90 days (or your preference)
    - **Scopes**: Select these:
      - ✅ `repo` (full control of private repositories)
@@ -73,7 +73,7 @@ The mcp_github tools require a GitHub personal access token (PAT) via environmen
 Add the token to your `.env` file:
 
 ```bash
-# In /Users/thayere/Documents/_DEV/devlog/.env
+# In /Users/your-project/.env
 GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
@@ -118,7 +118,7 @@ gh auth status
 
 ### "404 Not Found" Error
 - **Cause**: Repository doesn't exist at specified owner/repo
-- **Fix**: Verify you're using the correct owner (`YOUR_USER_NAME`) and repo (`devlog`)
+- **Fix**: Verify you're using the correct owner (`YOUR_USER_NAME`) and repo (`YOUR_REPO_NAME`)
 
 ### "403 Unauthorized" Error
 - **Cause**: Token lacks required scopes or is invalid
