@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/ericthayer/agents-config/compare/v1.1.2...v1.2.0) (2026-02-01)
+
+
+### Features
+
+* export prompts folder and sync documentation for v1.2.0 ([9377379](https://github.com/ericthayer/agents-config/commit/937737917c961bca8a25bc88476c16c04d392a47))
+
 ## [1.1.2](https://github.com/ericthayer/agents-config/compare/v1.1.1...v1.1.2) (2026-02-01)
 
 
