@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/ericthayer/agents-config/compare/v1.2.0...v1.2.1) (2026-02-01)
+
+
+### Bug Fixes
+
+* add ABOUT document ([5ec04bc](https://github.com/ericthayer/agents-config/commit/5ec04bc3ad8d7e496274c70623570a7c5945e6ec))
+
 # [1.2.0](https://github.com/ericthayer/agents-config/compare/v1.1.2...v1.2.0) (2026-02-01)
 
 

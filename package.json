@@ -1,6 +1,6 @@
 {
   "name": "agents-config",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A comprehensive knowledge base and skill library for building production-grade React applications with AI-powered tools and best practices.",
   "author": "Eric Thayer",
   "license": "MIT",
