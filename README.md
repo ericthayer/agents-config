@@ -148,27 +148,10 @@ Implement Google Gemini API integration with:
 - Loading and streaming UI states
 - Attribution and safety requirements
 
-#### **`vercel-react-best-practices/`** (Optional)
-Performance optimization guidelines from Vercel Engineering. Covers 45+ rules across 8 categories:
-- Eliminating waterfalls (async patterns)
-- Bundle size optimization
-- Server-side performance
-- Client-side data fetching
-- Rendering optimization
-- Re-render prevention
-- Event handling and refs
-- JavaScript optimization
-
-**Installation:**
-```bash
-npx add-skill vercel-labs/agent-skills
-```
-
-Includes subdirectories:
-- **`rules/`** - Individual rule documents (45+ files organized by category)
-- **`workflows/`** - Task-specific workflows:
-  - `sdd-workflow.md` - Spec-driven development workflow
-  - `setup-orchestration.md` - Project setup orchestration
+#### **`workflows/`**
+Task-specific development workflows:
+- **`sdd-workflow.md`** - Spec-driven development workflow
+- **`setup-orchestration.md`** - Project setup orchestration
 
 ## Key Principles
 
@@ -186,7 +169,7 @@ Reference the appropriate skill or rule based on the development task:
 - Use `accessibility-audit` before marking features complete
 - Use `scaffold-component` when creating new components
 - Use `integrate-gemini` for AI feature implementation
-- Install and reference `vercel-react-best-practices` for performance optimization (optional: `npx add-skill vercel-labs/agent-skills`)
+- Reference `web-performance` rules for optimization guidance
 
 ### For Developers
 - Start with [AGENTS.md](AGENTS.md) for core principles
@@ -260,4 +243,4 @@ MIT © Eric Thayer
 
 ---
 
-**Last Updated:** January 31, 2025
+**Last Updated:** January 31, 2026

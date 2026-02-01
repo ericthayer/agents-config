@@ -188,10 +188,9 @@ Include: retry logic, rate limit handling, proper attribution
 ### 4. Performance Optimization Agent
 **Purpose**: Analyze and optimize React component performance
 
-**Skill**: [vercel-react-best-practices](./skills/vercel-react-best-practices/SKILL.md)
+**Rule**: [web-performance](./rules/web-performance.md)
 
 **Capabilities**:
-- Applies Vercel React Best Practices (45 rules across 8 categories)
 - Analyzes bundle size and tree-shaking opportunities
 - Identifies re-render issues and optimization opportunities
 - Implements memoization patterns (`React.memo`, `useMemo`, `useCallback`)
@@ -225,7 +224,7 @@ Priority: Apply bundle optimization and re-render prevention patterns
 - Creates or updates component spec before refactoring
 - Updates components to latest framework patterns
 - Applies TypeScript best practices
-- Applies Vercel React Best Practices optimization rules
+- Applies performance optimization patterns
 - Improves accessibility (ARIA labels, keyboard navigation)
 - Optimizes performance (memoization, lazy loading)
 - Maintains backward compatibility where possible
@@ -419,7 +418,6 @@ Include: accessibility section, code examples, interactive controls
 | `skills/accessibility-audit/` | Accessibility verification checklist | Accessibility Audit |
 | `skills/scaffold-component/` | Component scaffolding workflow | Component Scaffolding |
 | `skills/integrate-gemini/` | AI integration patterns | AI Integration |
-| `skills/vercel-react-best-practices/` | Performance optimization rules (45 rules, 8 categories) | Performance Optimization |
 | `skills/workflows/` | Development workflows (SDD, setup) | All agents following SDD |
 
 ---

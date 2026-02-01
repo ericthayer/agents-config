@@ -23,10 +23,13 @@ my-react-app/
 │   ├── skills/
 │   │   ├── accessibility-audit/SKILL.md
 │   │   ├── scaffold-component/SKILL.md
-│   │   ├── integrate-gemini/SKILL.md  # Gemini workflow
-│   │   └── vercel-react-best-practices/SKILL.md
+│   │   └── integrate-gemini/SKILL.md  # Gemini workflow
+│   ├── prompts/
+│   │   ├── create-pr.prompt.md
+│   │   └── scaffold-component.prompt.md
 │   └── instructions/
 │       ├── development-standards.instructions.md
+│       ├── web-interface-guidelines.instructions.md
 │       └── mui.instructions.md  # MUI theming guide
 ├── .agents-project.json
 ├── CLAUDE.md

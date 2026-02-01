@@ -10,11 +10,10 @@ Analyze the last git commit and create a comprehensive PR description.
 ## Instructions
 
 1. **Get the latest commit details:**
-   - Use `mcp_github_get_commit` with:
-     - owner: `ericthayer`
-     - repo: `agents-config`
-     - sha: Get from `git log -1 --pretty=format:"%H"`
-     - include_diff: `true`
+   - Get repository info from `git remote get-url origin`
+   - Parse owner and repo from the URL
+   - Get commit SHA from `git log -1 --pretty=format:"%H"`
+   - Use the commit data to analyze changes
 
 2. **Analyze the commit data:**
    - Extract commit message (title and body)
@@ -55,21 +54,17 @@ Analyze the last git commit and create a comprehensive PR description.
 # Get current branch
 BRANCH=$(git branch --show-current)
 
-# Create PR with template
+# Create PR with generated description
 gh pr create \
   --title "$(git log -1 --pretty=format:'%s')" \
-  --body "$(cat .github/pr-template-commits.md)" \
+  --body-file /tmp/pr-body.md \
   --base main \
   --head $BRANCH
 ```
 
-See `.github/GITHUB_AUTH_SETUP.md` for authentication setup.
-
 ## Context
-- Repository: github.com/ericthayer/agents-config
-- Default base branch: `main`
-- See `.github/pr-template-commits.md` for reusable PR description template
-- See `.github/GITHUB_AUTH_SETUP.md` for GitHub authentication guide
+- Default base branch: `main` (or detect from `git remote show origin | grep 'HEAD branch'`)
+- Repository info detected dynamically from git remote
 
 ## Success Criteria
 ✅ PR created with descriptive title

@@ -25,7 +25,6 @@ For complex tasks, use these specialized skill workflows:
 - `.agents/skills/accessibility-audit/SKILL.md` - Comprehensive accessibility testing
 - `.agents/skills/scaffold-component/SKILL.md` - Component scaffolding with specs
 - `.agents/skills/integrate-gemini/SKILL.md` - AI integration patterns (if enabled)
-- `.agents/skills/vercel-react-best-practices/SKILL.md` - Performance patterns
 
 ### Instructions (in .agents/instructions/)
 
