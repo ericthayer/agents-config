@@ -54,12 +54,18 @@ Analyze the last git commit and create a comprehensive PR description.
 # Get current branch
 BRANCH=$(git branch --show-current)
 
+# Create unique temp file to avoid conflicts across projects
+PR_BODY_FILE="/tmp/pr-body-$(date +%s).md"
+
 # Create PR with generated description
 gh pr create \
   --title "$(git log -1 --pretty=format:'%s')" \
-  --body-file /tmp/pr-body.md \
+  --body-file "$PR_BODY_FILE" \
   --base main \
   --head $BRANCH
+
+# Clean up temp file
+rm -f "$PR_BODY_FILE"
 ```
 
 ## Context
