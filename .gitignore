@@ -10,3 +10,4 @@ node_modules/
 
 # Test directories (will be created for testing)
 test-app/
+.npmrc

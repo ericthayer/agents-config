@@ -148,7 +148,7 @@ Implement Google Gemini API integration with:
 - Loading and streaming UI states
 - Attribution and safety requirements
 
-#### **`vercel-react-best-practices/`** (Optional via `npx add-skill vercel-labs/agent-skills`)
+#### **`vercel-react-best-practices/`** (Optional)
 Performance optimization guidelines from Vercel Engineering. Covers 45+ rules across 8 categories:
 - Eliminating waterfalls (async patterns)
 - Bundle size optimization
