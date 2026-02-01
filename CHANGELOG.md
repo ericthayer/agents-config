@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/ericthayer/agents-config/compare/v1.1.1...v1.1.2) (2026-02-01)
+
+
+### Bug Fixes
+
+* remove .npmrc ([06e65b2](https://github.com/ericthayer/agents-config/commit/06e65b2a8ddfb4b4dddd9b6155bd12db4cb28454))
+
 ## [1.1.1](https://github.com/ericthayer/agents-config/compare/v1.1.0...v1.1.1) (2026-01-31)
 
 
