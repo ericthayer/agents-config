@@ -2,7 +2,7 @@
 
 **Purpose**: Architectural constraints, security requirements, and UX patterns for integrating Google Gemini API into React applications.
 
-**Related Skill**: [integrate_gemini](../skills/integrate_gemini/SKILL.md)
+**Related Skill**: [integrate-gemini](../skills/integrate-gemini/SKILL.md)
 
 ---
 

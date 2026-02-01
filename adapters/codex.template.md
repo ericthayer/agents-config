@@ -21,7 +21,6 @@ This project follows shared agentic configuration:
 - `.agents/skills/accessibility-audit/SKILL.md` - Accessibility compliance checking
 - `.agents/skills/scaffold-component/SKILL.md` - Component scaffolding workflow
 - `.agents/skills/integrate-gemini/SKILL.md` - AI integration patterns
-- `.agents/skills/vercel-react-best-practices/SKILL.md` - Performance optimization
 
 ## Agent Configuration
 

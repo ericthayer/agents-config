@@ -5,8 +5,8 @@ applyTo: '**'
 
 This document outlines the standards and best practices for Application Development which uses React, TypeScript, Material UI, and follows the [Airbnb style guide](https://airbnb.io/javascript/) page.
 
-## Web Interface Guidelines - Development Standards and Guidelines
-ALWAYS refer to the `.github/instructions/web-interface-guidelines.instructions.md` file for detailed explicit guidelines to follow when building _any_ web interface.
+## Web Interface Guidelines
+ALWAYS refer to the [Web Interface Guidelines](./web-interface-guidelines.instructions.md) for detailed explicit guidelines when building _any_ web interface.
 
 ## React
 

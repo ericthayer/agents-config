@@ -22,10 +22,13 @@ my-nextjs-app/
 │   │   └── web-performance.md
 │   ├── skills/
 │   │   ├── accessibility-audit/SKILL.md
-│   │   ├── scaffold-component/SKILL.md
-│   │   └── vercel-react-best-practices/SKILL.md
+│   │   └── scaffold-component/SKILL.md
+│   ├── prompts/
+│   │   ├── create-pr.prompt.md
+│   │   └── scaffold-component.prompt.md
 │   └── instructions/
-│       └── development-standards.instructions.md
+│       ├── development-standards.instructions.md
+│       └── web-interface-guidelines.instructions.md
 ├── .agents-project.json
 ├── .github/copilot-instructions.md
 ├── CLAUDE.md

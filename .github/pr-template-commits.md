@@ -38,16 +38,13 @@ Complete AI development framework with three layers:
 - `web-performance.md` - Performance optimization guidelines
 
 #### Skills (Executable Workflows)
-- `scaffold_component/` - Component creation workflow with SDD process
-- `accessibility_audit/` - Accessibility testing and compliance audit
-- `vercel-react-best-practices/` - 45 performance rules across 8 categories:
-  - Async patterns (API routes, dependencies, parallel fetching, suspense)
-  - Bundle optimization (dynamic imports, barrel imports, deferred third-party)
-  - Client optimizations (event listeners, localStorage, SWR deduplication)
-  - JavaScript micro-optimizations (caching, batching DOM, early exits)
-  - Rendering patterns (SVG precision, hydration, transitions)
-  - Re-render optimization (memo, derived state, lazy initialization)
-  - Server optimization (auth actions, caching, serialization)
+- `scaffold-component/` - Component creation workflow with SDD process
+- `accessibility-audit/` - Accessibility testing and compliance audit
+- `integrate-gemini/` - Google Gemini API integration patterns
+
+#### Prompts (Reusable Templates)
+- `create-pr.prompt.md` - PR creation from commit template
+- `scaffold-component.prompt.md` - Component scaffolding prompt
 
 ### 3. Testing Infrastructure
 - **Created**: `vitest.config.ts` with jsdom environment and jest-dom setup

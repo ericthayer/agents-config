@@ -129,6 +129,7 @@ ${colors.bright}Description:${colors.reset}
 
 ${colors.bright}What gets copied to .agents/:${colors.reset}
   - AGENTS.md (core guidelines)
+  - prompts/ (reusable AI workflow templates)
   - rules/ (coding standards based on your stack)
   - skills/ (specialized workflows)
   - instructions/ (process guidelines)
@@ -379,6 +380,18 @@ function copyAgentsFolder(projectDir, config, filesToCreate) {
       dest: agentsMdDest,
       relativePath: '.agents/AGENTS.md',
       type: 'file',
+    });
+  }
+  
+  // Prompts (reusable AI agent workflows)
+  const promptsDir = path.join(PACKAGE_ROOT, 'prompts');
+  const promptsDest = path.join(agentsDir, 'prompts');
+  if (fs.existsSync(promptsDir)) {
+    filesToCreate.push({
+      src: promptsDir,
+      dest: promptsDest,
+      relativePath: '.agents/prompts/',
+      type: 'folder',
     });
   }
   

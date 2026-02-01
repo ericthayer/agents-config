@@ -23,7 +23,6 @@ This project uses shared agentic configuration:
 - `.agents/skills/accessibility-audit/SKILL.md` - WCAG 2.2 AA compliance
 - `.agents/skills/scaffold-component/SKILL.md` - Component generation workflow
 - `.agents/skills/integrate-gemini/SKILL.md` - AI integration patterns
-- `.agents/skills/vercel-react-best-practices/SKILL.md` - Performance optimization
 
 ## Code Generation Standards
 

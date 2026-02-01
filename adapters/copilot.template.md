@@ -21,7 +21,6 @@ This project follows shared agentic configuration guidelines. All rules, skills,
 - **accessibility-audit/SKILL.md** - WCAG 2.2 AA compliance auditing
 - **scaffold-component/SKILL.md** - Component scaffolding with accessibility built-in
 - **integrate-gemini/SKILL.md** - AI feature integration patterns (if Gemini enabled)
-- **vercel-react-best-practices/SKILL.md** - Performance optimization patterns
 
 ### Instructions (in .agents/instructions/)
 
