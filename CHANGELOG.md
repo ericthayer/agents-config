@@ -1,3 +1,11 @@
+## [1.3.1](https://github.com/ericthayer/agents-config/compare/v1.3.0...v1.3.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* add release on publish ([009284c](https://github.com/ericthayer/agents-config/commit/009284cb35514ad094279b0c8a4411a734ffe7e3))
+* trigger GitHub Pages deployment on release publish ([fd4a42c](https://github.com/ericthayer/agents-config/commit/fd4a42c4dd6b8d8e5b07985c3b0b1205bfc6b55a))
+
 # [1.3.0](https://github.com/ericthayer/agents-config/compare/v1.2.2...v1.3.0) (2026-02-03)
 
 
