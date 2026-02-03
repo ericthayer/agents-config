@@ -1,3 +1,11 @@
+## [1.4.2](https://github.com/ericthayer/agents-config/compare/v1.4.1...v1.4.2) (2026-02-03)
+
+
+### Bug Fixes
+
+* clarify multi-agent maintenance challenge in documentation ([aa75032](https://github.com/ericthayer/agents-config/commit/aa75032f472a9cf5571c2f8c7288f1fb85f37289))
+* use git reset to ensure release runs against latest main ([8d7e3a1](https://github.com/ericthayer/agents-config/commit/8d7e3a1e8b23da7628a508613f015bc6b06709db))
+
 ## [1.4.1](https://github.com/ericthayer/agents-config/compare/v1.4.0...v1.4.1) (2026-02-03)
 
 
