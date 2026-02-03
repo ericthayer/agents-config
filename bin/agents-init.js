@@ -101,8 +101,6 @@ const CORE_RULES = ['accessibility', 'component-architecture', 'spec-driven-deve
 // Core skills always included
 const CORE_SKILLS = ['accessibility-audit', 'scaffold-component', 'workflows'];
 
-// Core skill workflows always included
-
 // Core instructions always included
 const CORE_INSTRUCTIONS = ['development-standards', 'web-interface-guidelines'];
 
@@ -113,6 +111,51 @@ const GITHUB_FILES = [
   'pr-template-commits.md',
   'pr-body-semantic-release.md',
 ];
+
+// Schema version for .agents-project.json
+const SCHEMA_VERSION = '1.1.0';
+
+// Migration functions for upgrading old configs
+const MIGRATIONS = {
+  '1.0.0': (config) => {
+    // v1.0.0 -> v1.1.0: Add features.github if copilot is in agents
+    if (config.agents?.includes('copilot') && !config.features?.github) {
+      config.features = config.features || {};
+      config.features.github = true;
+    }
+    config.version = '1.1.0';
+    return config;
+  },
+};
+
+function migrateConfig(config) {
+  if (!config.version) {
+    config.version = '1.0.0';
+  }
+  
+  let currentVersion = config.version;
+  const versions = Object.keys(MIGRATIONS).sort();
+  
+  for (const version of versions) {
+    if (compareVersions(currentVersion, version) <= 0 && compareVersions(version, SCHEMA_VERSION) < 0) {
+      log.info(`Migrating config from v${currentVersion} to v${MIGRATIONS[version](config).version}`);
+      config = MIGRATIONS[version](config);
+      currentVersion = config.version;
+    }
+  }
+  
+  return config;
+}
+
+function compareVersions(a, b) {
+  const partsA = a.split('.').map(Number);
+  const partsB = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (partsA[i] > partsB[i]) return 1;
+    if (partsA[i] < partsB[i]) return -1;
+  }
+  return 0;
+}
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -325,7 +368,7 @@ function generateProjectConfig(config) {
   
   return {
     $schema: 'https://raw.githubusercontent.com/ericthayer/agents-config/main/schemas/agents-project.schema.json',
-    version: '1.0.0',
+    version: SCHEMA_VERSION,
     project: {
       name: config.projectName || path.basename(process.cwd()),
       framework: config.framework || 'react',
@@ -337,6 +380,7 @@ function generateProjectConfig(config) {
       gemini: config.gemini || false,
       storybook: config.storybook || false,
       threejs: config.threejs || false,
+      github: config.agents?.includes('copilot') || false,
     },
     rules: {
       include: rulesInclude,

@@ -56,10 +56,14 @@ agents-config/
 │   ├── agents-init.js  # Main CLI tool
 │   └── postinstall.js  # Post-install message
 ├── instructions/       # Process guidelines
-├── prompts/           # Reusable prompt templates
 ├── rules/             # Coding standards
 ├── schemas/           # JSON schemas
-├── skills/            # Specialized workflows
+├── skills/            # Specialized workflows and automation
+│   ├── accessibility-audit/
+│   ├── scaffold-component/
+│   ├── integrate-gemini/
+│   ├── github-automation/
+│   └── workflows/
 └── examples/          # Example projects
 ```
 

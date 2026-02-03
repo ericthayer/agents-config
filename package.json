@@ -32,6 +32,10 @@
     "agents-init": "./bin/agents-init.js"
   },
   "files": [
+    ".github/COMMIT_CONVENTION.md",
+    ".github/GITHUB_AUTH_SETUP.md",
+    ".github/pr-template-commits.md",
+    ".github/pr-body-semantic-release.md",
     "AGENTS.md",
     "README.md",
     "bin/",
@@ -39,7 +43,6 @@
     "instructions/",
     "rules/",
     "skills/",
-    "prompts/",
     "schemas/"
   ],
   "scripts": {

@@ -59,7 +59,19 @@ jobs:
           test -f skills/accessibility-audit/SKILL.md
           test -f skills/scaffold-component/SKILL.md
           test -f skills/integrate-gemini/SKILL.md
+          test -f skills/github-automation/create-pr.md
+          test -f skills/workflows/sdd-workflow.md
+          test -f skills/workflows/setup-orchestration.md
           echo "✓ Core skills present"
+
+      - name: Verify .github files exist
+        run: |
+          echo "Checking .github files..."
+          test -f .github/COMMIT_CONVENTION.md
+          test -f .github/GITHUB_AUTH_SETUP.md
+          test -f .github/pr-template-commits.md
+          test -f .github/pr-body-semantic-release.md
+          echo "✓ GitHub files present"
 
       - name: Verify adapters exist
         run: |
@@ -69,6 +81,22 @@ jobs:
           test -f adapters/cursor.template.md
           test -f adapters/gemini.template.md
           echo "✓ Core adapters present"
+
+      - name: Verify npm pack contents
+        run: |
+          echo "Packing package to verify contents..."
+          npm pack --dry-run 2>&1 | tee pack-output.txt
+          
+          echo "Checking required files are in package..."
+          grep -q "AGENTS.md" pack-output.txt
+          grep -q "bin/agents-init.js" pack-output.txt
+          grep -q "adapters/copilot.template.md" pack-output.txt
+          grep -q "rules/accessibility.md" pack-output.txt
+          grep -q "skills/scaffold-component/SKILL.md" pack-output.txt
+          grep -q "skills/github-automation/create-pr.md" pack-output.txt
+          grep -q ".github/COMMIT_CONVENTION.md" pack-output.txt
+          
+          echo "✓ npm pack includes all required files"
 
   test-install:
     runs-on: ubuntu-latest
