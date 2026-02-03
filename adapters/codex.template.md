@@ -13,6 +13,10 @@
 
 This project follows shared agentic configuration:
 
+**📋 Start here:**
+- **[.agents/AGENTS.md](.agents/AGENTS.md)** - Core coding guidelines and rules
+- **[.agents/PROJECT-CONTEXT.md](.agents/PROJECT-CONTEXT.md)** - Project-specific patterns (run `npx agents-analyze` to generate)
+
 ### Active Rules
 {{RULES_LIST}}
 

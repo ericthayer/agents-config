@@ -29,7 +29,8 @@
   ],
   "type": "module",
   "bin": {
-    "agents-init": "./bin/agents-init.js"
+    "agents-init": "./bin/agents-init.js",
+    "agents-analyze": "./bin/agents-analyze.js"
   },
   "files": [
     ".github/COMMIT_CONVENTION.md",

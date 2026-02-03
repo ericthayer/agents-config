@@ -26,6 +26,18 @@ npm install agents-config --save-dev
 npx agents-init
 ```
 
+### 1.5 Customize for Your Codebase
+
+After initialization, run the analyzer to generate project-specific context:
+
+```bash
+npx agents-analyze
+```
+
+This scans your codebase and generates:
+- `.agents/ANALYSIS.md` - Full project analysis report
+- `.agents/PROJECT-CONTEXT.md` - AI-ready project summary
+
 ### 2. Auto-Detection
 
 The CLI automatically detects your stack:
@@ -71,9 +83,9 @@ my-project/
 node_modules/agents-config/
 ├── AGENTS.md                         # Core guidelines
 ├── rules/                            # 10 curated rules
-├── skills/                           # Reusable workflows
+├── skills/                           # Reusable workflows and automation
 ├── instructions/                     # 6 task-specific guides
-└── prompts/                          # AI prompt templates
+└── schemas/                          # Configuration schemas
 ```
 
 ## What's in the Rules?
@@ -102,17 +114,15 @@ Skills are multi-step instructions for common tasks, packaged as self-contained 
 - `scaffold-component/` - Create component with tests, stories, and accessibility
 - `integrate-gemini/` - Add Google Gemini AI capabilities to your app
 - `accessibility-audit/` - Comprehensive a11y review workflow
+- `github-automation/` - GitHub workflow automation (PRs, commits, releases)
 
 **Workflow Skills:**
 - `workflows/sdd-workflow.md` - Complete spec-driven development process
 - `workflows/setup-orchestration.md` - Multi-agent task orchestration
+- `workflows/codebase-analysis.md` - Codebase analysis and context generation
 
 **Instructions** (task-specific guides):
 - Development standards, GitHub issues, release notes, Storybook, MUI, web interface guidelines
-
-**Prompts** (reusable templates):
-- `create-pr.prompt.md` - Generate PR descriptions from commits
-- `scaffold-component.prompt.md` - Component scaffolding template
 
 One skill, consistent output across all AI assistants.
 
@@ -172,11 +182,18 @@ npm install agents-config --save-dev
 # Initialize (interactive)
 npx agents-init
 
+# Analyze codebase and generate project context
+npx agents-analyze
+
 # Preview without writing
 npx agents-init --dry-run
+npx agents-analyze --dry-run
 
 # Force overwrite existing files
 npx agents-init --force
+
+# Verify configuration
+npx agents-analyze --verify
 ```
 
 ## Real-World Examples

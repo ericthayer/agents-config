@@ -12,6 +12,8 @@ Use these instructions when building React applications in TypeScript, independe
 **INSTRUCTIONS:**
 Create responsive, accessible React applications with TypeScript using strict configuration.
 
+> **📋 Project Context:** For project-specific conventions, patterns, and technology stack details, see [PROJECT-CONTEXT.md](./PROJECT-CONTEXT.md). That file contains customizations specific to this codebase that override or extend these general guidelines.
+
 **IMPORTANT!** Before you start a task, or make a new change, follow these _rules_:
 
 - DO NOT change the visual design, theme styling, or composition of the UI once a `checkpoint`, and/or a component or pattern has been established. 

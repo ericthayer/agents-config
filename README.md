@@ -34,10 +34,17 @@ This will:
 ### CLI Options
 
 ```bash
+# Initialize agent configuration
 npx agents-init              # Interactive mode
 npx agents-init --dry-run    # Preview without writing files
 npx agents-init --force      # Overwrite existing files
 npx agents-init --help       # Show help
+
+# Analyze and customize (run after init)
+npx agents-analyze           # Scan codebase and generate context
+npx agents-analyze --dry-run # Preview analysis without writing
+npx agents-analyze --report  # Generate report only
+npx agents-analyze --verify  # Verify configuration
 ```
 
 ## Supported AI Agents
@@ -152,6 +159,7 @@ GitHub workflow automation including:
 Task-specific development workflows:
 - **`sdd-workflow.md`** - Spec-driven development workflow
 - **`setup-orchestration.md`** - Project setup orchestration
+- **`codebase-analysis.md`** - Codebase analysis and context generation
 
 ## Key Principles
 
