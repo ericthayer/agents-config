@@ -99,10 +99,63 @@ const DATABASES = {
 const CORE_RULES = ['accessibility', 'component-architecture', 'spec-driven-development', 'web-performance'];
 
 // Core skills always included
-const CORE_SKILLS = ['accessibility-audit', 'scaffold-component'];
+const CORE_SKILLS = ['accessibility-audit', 'scaffold-component', 'workflows'];
 
 // Core instructions always included
 const CORE_INSTRUCTIONS = ['development-standards', 'web-interface-guidelines'];
+
+// .github files to include (excluding workflows which are package-specific)
+const GITHUB_FILES = [
+  'COMMIT_CONVENTION.md',
+  'GITHUB_AUTH_SETUP.md',
+  'pr-template-commits.md',
+  'pr-body-semantic-release.md',
+];
+
+// Schema version for .agents-project.json
+const SCHEMA_VERSION = '1.1.0';
+
+// Migration functions for upgrading old configs
+const MIGRATIONS = {
+  '1.0.0': (config) => {
+    // v1.0.0 -> v1.1.0: Add features.github if copilot is in agents
+    if (config.agents?.includes('copilot') && !config.features?.github) {
+      config.features = config.features || {};
+      config.features.github = true;
+    }
+    config.version = '1.1.0';
+    return config;
+  },
+};
+
+function migrateConfig(config) {
+  if (!config.version) {
+    config.version = '1.0.0';
+  }
+  
+  let currentVersion = config.version;
+  const versions = Object.keys(MIGRATIONS).sort();
+  
+  for (const version of versions) {
+    if (compareVersions(currentVersion, version) <= 0 && compareVersions(version, SCHEMA_VERSION) < 0) {
+      log.info(`Migrating config from v${currentVersion} to v${MIGRATIONS[version](config).version}`);
+      config = MIGRATIONS[version](config);
+      currentVersion = config.version;
+    }
+  }
+  
+  return config;
+}
+
+function compareVersions(a, b) {
+  const partsA = a.split('.').map(Number);
+  const partsB = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (partsA[i] > partsB[i]) return 1;
+    if (partsA[i] < partsB[i]) return -1;
+  }
+  return 0;
+}
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -127,12 +180,18 @@ ${colors.bright}Description:${colors.reset}
   2. Creates adapter files for your AI coding assistants
   3. Creates .agents-project.json for project-specific config
 
-${colors.bright}What gets copied to .agents/:${colors.reset}
-  - AGENTS.md (core guidelines)
-  - prompts/ (reusable AI workflow templates)
-  - rules/ (coding standards based on your stack)
-  - skills/ (specialized workflows)
-  - instructions/ (process guidelines)
+${colors.bright}What gets copied:${colors.reset}
+  .agents/
+    - AGENTS.md (core guidelines)
+    - rules/ (coding standards based on your stack)
+    - skills/ (specialized workflows and automation)
+    - instructions/ (process guidelines)
+  
+  .github/
+    - COMMIT_CONVENTION.md (conventional commits guide)
+    - GITHUB_AUTH_SETUP.md (GitHub CLI/token setup)
+    - pr-template-commits.md (PR description template)
+    - pr-body-semantic-release.md (semantic release PR template)
 
 ${colors.bright}Supported Agents:${colors.reset}
   - GitHub Copilot (.github/copilot-instructions.md)
@@ -281,9 +340,6 @@ function determineRules(config) {
   if (config.gemini) rules.push('gemini');
   if (config.threejs) rules.push('three-js-react');
   
-  // Always include web-performance
-  rules.push('web-performance');
-  
   return rules;
 }
 
@@ -291,6 +347,7 @@ function determineSkills(config) {
   const skills = [...CORE_SKILLS];
   
   if (config.gemini) skills.push('integrate-gemini');
+  if (config.agents.includes('copilot')) skills.push('github-automation');
   
   // Additional skills can be installed via: npx add-skill vercel-labs/agent-skills
   
@@ -311,7 +368,7 @@ function generateProjectConfig(config) {
   
   return {
     $schema: 'https://raw.githubusercontent.com/ericthayer/agents-config/main/schemas/agents-project.schema.json',
-    version: '1.0.0',
+    version: SCHEMA_VERSION,
     project: {
       name: config.projectName || path.basename(process.cwd()),
       framework: config.framework || 'react',
@@ -323,6 +380,7 @@ function generateProjectConfig(config) {
       gemini: config.gemini || false,
       storybook: config.storybook || false,
       threejs: config.threejs || false,
+      github: config.agents?.includes('copilot') || false,
     },
     rules: {
       include: rulesInclude,
@@ -383,18 +441,6 @@ function copyAgentsFolder(projectDir, config, filesToCreate) {
     });
   }
   
-  // Prompts (reusable AI agent workflows)
-  const promptsDir = path.join(PACKAGE_ROOT, 'prompts');
-  const promptsDest = path.join(agentsDir, 'prompts');
-  if (fs.existsSync(promptsDir)) {
-    filesToCreate.push({
-      src: promptsDir,
-      dest: promptsDest,
-      relativePath: '.agents/prompts/',
-      type: 'folder',
-    });
-  }
-  
   // Rules
   for (const rule of rules) {
     const src = path.join(PACKAGE_ROOT, 'rules', `${rule}.md`);
@@ -434,6 +480,26 @@ function copyAgentsFolder(projectDir, config, filesToCreate) {
         src,
         dest,
         relativePath: `.agents/instructions/${instruction}.instructions.md`,
+        type: 'file',
+      });
+    }
+  }
+  
+  return filesToCreate;
+}
+
+function copyGithubFolder(projectDir, filesToCreate) {
+  const githubDir = path.join(projectDir, '.github');
+  
+  // Copy individual .github files (not workflows)
+  for (const file of GITHUB_FILES) {
+    const src = path.join(PACKAGE_ROOT, '.github', file);
+    const dest = path.join(githubDir, file);
+    if (fs.existsSync(src)) {
+      filesToCreate.push({
+        src,
+        dest,
+        relativePath: `.github/${file}`,
         type: 'file',
       });
     }
@@ -546,6 +612,11 @@ async function main() {
     // Add .agents folder contents
     copyAgentsFolder(projectDir, config, filesToCreate);
     
+    // Add .github folder contents only when GitHub Copilot is selected
+    if (selectedAgents.includes('copilot')) {
+      copyGithubFolder(projectDir, filesToCreate);
+    }
+    
     // Add agent adapter files
     for (const agentKey of selectedAgents) {
       const agent = AGENTS[agentKey];
@@ -587,6 +658,11 @@ async function main() {
     
     console.log(`\n${colors.bright}.agents/ folder:${colors.reset}`);
     filesToCreate.filter(f => f.relativePath.startsWith('.agents/')).forEach(f => {
+      log.file(f.relativePath);
+    });
+    
+    console.log(`\n${colors.bright}.github/ folder:${colors.reset}`);
+    filesToCreate.filter(f => f.relativePath.startsWith('.github/') && f.type === 'file').forEach(f => {
       log.file(f.relativePath);
     });
     
@@ -652,8 +728,11 @@ async function main() {
 ${colors.cyan}What was created:${colors.reset}
 
   ${colors.bright}.agents/${colors.reset}
-    Your project's local copy of rules, skills, and instructions.
-    AI agents can read these files for context.
+    Rules, skills, and instructions for AI agents.
+    Contains workflows, coding standards, and best practices.
+
+  ${colors.bright}.github/${colors.reset}
+    PR templates, commit conventions, and GitHub workflow guides.
 
   ${colors.bright}Adapter files${colors.reset}
     Thin config files that reference .agents/ for each AI tool.

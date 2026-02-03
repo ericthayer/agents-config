@@ -117,12 +117,6 @@ Deep-dive technical rules and patterns for specific technologies and approaches:
 - **`three-js-react.md`** - Three.js integration with React
 - **`web-performance.md`** - Performance optimization strategies
 
-### 📂 `prompts/`
-Pre-written prompt templates for AI-powered code generation and assistance:
-
-- **`create-pr.prompt.md`** - Template for generating pull request descriptions
-- **`scaffold-component.prompt.md`** - Template for component scaffolding requests
-
 ### 📂 `skills/`
 Reusable skill modules for common development tasks. Each skill includes specific guidance and workflows:
 
@@ -147,6 +141,12 @@ Implement Google Gemini API integration with:
 - Error handling and rate limiting
 - Loading and streaming UI states
 - Attribution and safety requirements
+
+#### **`github-automation/`**
+GitHub workflow automation including:
+- PR creation from commits
+- Conventional commit formatting
+- Release notes generation
 
 #### **`workflows/`**
 Task-specific development workflows:
@@ -174,8 +174,8 @@ Reference the appropriate skill or rule based on the development task:
 ### For Developers
 - Start with [AGENTS.md](AGENTS.md) for core principles
 - Reference relevant files in `rules/` and `instructions/` for specific guidance
-- Use `prompts/` as templates for consistent communication
-- Follow the workflows in `skills/` for common tasks
+- Use `skills/` for specialized workflows and automation
+- Follow the workflows in `skills/workflows/` for common tasks
 
 ## Integration
 

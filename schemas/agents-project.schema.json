@@ -68,6 +68,28 @@
         }
       }
     },
+    "features": {
+      "type": "object",
+      "description": "Feature flags for optional integrations",
+      "properties": {
+        "gemini": {
+          "type": "boolean",
+          "description": "Enable Google Gemini AI integration"
+        },
+        "storybook": {
+          "type": "boolean",
+          "description": "Enable Storybook documentation"
+        },
+        "threejs": {
+          "type": "boolean",
+          "description": "Enable Three.js/React Three Fiber integration"
+        },
+        "github": {
+          "type": "boolean",
+          "description": "Enable GitHub workflow automation (PR templates, commit conventions)"
+        }
+      }
+    },
     "overrides": {
       "type": "object",
       "description": "Project-specific rule overrides",
