@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/ericthayer/agents-config/compare/v1.3.1...v1.4.0) (2026-02-03)
+
+
+### Features
+
+* add agents-analyze CLI for codebase analysis and guided customization ([#11](https://github.com/ericthayer/agents-config/issues/11)) ([d350113](https://github.com/ericthayer/agents-config/commit/d3501133c71dca2c7eeec45c2d1bff041f19ecac))
+
 ## [1.3.1](https://github.com/ericthayer/agents-config/compare/v1.3.0...v1.3.1) (2026-02-03)
 
 
