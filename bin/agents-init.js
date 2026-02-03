@@ -140,9 +140,8 @@ ${colors.bright}Description:${colors.reset}
 ${colors.bright}What gets copied:${colors.reset}
   .agents/
     - AGENTS.md (core guidelines)
-    - prompts/ (reusable AI workflow templates)
     - rules/ (coding standards based on your stack)
-    - skills/ (specialized workflows)
+    - skills/ (specialized workflows and automation)
     - instructions/ (process guidelines)
   
   .github/
@@ -305,6 +304,7 @@ function determineSkills(config) {
   const skills = [...CORE_SKILLS];
   
   if (config.gemini) skills.push('integrate-gemini');
+  if (config.agents.includes('copilot')) skills.push('github-automation');
   
   // Additional skills can be installed via: npx add-skill vercel-labs/agent-skills
   
@@ -394,18 +394,6 @@ function copyAgentsFolder(projectDir, config, filesToCreate) {
       dest: agentsMdDest,
       relativePath: '.agents/AGENTS.md',
       type: 'file',
-    });
-  }
-  
-  // Prompts (reusable AI agent workflows)
-  const promptsDir = path.join(PACKAGE_ROOT, 'prompts');
-  const promptsDest = path.join(agentsDir, 'prompts');
-  if (fs.existsSync(promptsDir)) {
-    filesToCreate.push({
-      src: promptsDir,
-      dest: promptsDest,
-      relativePath: '.agents/prompts/',
-      type: 'folder',
     });
   }
   
@@ -696,8 +684,8 @@ async function main() {
 ${colors.cyan}What was created:${colors.reset}
 
   ${colors.bright}.agents/${colors.reset}
-    Your project's local copy of rules, skills, and instructions.
-    AI agents can read these files for context.
+    Rules, skills, and instructions for AI agents.
+    Contains workflows, coding standards, and best practices.
 
   ${colors.bright}.github/${colors.reset}
     PR templates, commit conventions, and GitHub workflow guides.
