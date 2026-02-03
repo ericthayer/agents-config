@@ -1,3 +1,11 @@
+## [1.4.1](https://github.com/ericthayer/agents-config/compare/v1.4.0...v1.4.1) (2026-02-03)
+
+
+### Bug Fixes
+
+* add concurrency control to release workflow ([609bbb4](https://github.com/ericthayer/agents-config/commit/609bbb415ffe7583295d1ede97dd8a1bf7fbf25b))
+* pull latest before semantic-release to avoid behind-remote issues ([bba2cbb](https://github.com/ericthayer/agents-config/commit/bba2cbb95d5eb14e59841a8f291344041750d354))
+
 # [1.4.0](https://github.com/ericthayer/agents-config/compare/v1.3.1...v1.4.0) (2026-02-03)
 
 
