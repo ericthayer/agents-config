@@ -32,6 +32,18 @@
 npx agents-analyze
 ```
 
+### Guided Customization Mode
+```bash
+npx agents-analyze --guided
+```
+Asks interactive questions about:
+- Project description
+- Component composition patterns
+- State management notes
+- Error handling approach
+- Do's and Don'ts
+- Domain-specific rules
+
 ### Preview Mode (No Changes)
 ```bash
 npx agents-analyze --dry-run
@@ -72,19 +84,34 @@ npx agents-analyze --verbose
 - Build tools (Vite, Turbo, Webpack)
 - AI libraries (Gemini, OpenAI, Anthropic)
 
-### 3. Coding Conventions
+### 3. Auto-Detected Patterns (NEW!)
+Based on your dependencies, PROJECT-CONTEXT.md will include specific guidance for:
+
+| Dependency | Auto-Generated Patterns |
+|------------|------------------------|
+| **Redux/RTK** | Store slices, RTK Query, normalization |
+| **Zustand** | Domain stores, persist middleware, selectors |
+| **Jotai** | Atoms, derived atoms, atomWithStorage |
+| **TanStack Query** | Query keys, mutations, optimistic updates |
+| **React Hook Form** | Zod resolver, Controller, validation |
+| **Zod** | Schemas, type inference, safeParse |
+| **Tailwind CSS** | cn() helper, CSS variables, mobile-first |
+| **Material-UI** | sx prop, styled(), theming |
+| **Framer Motion** | motion components, variants, AnimatePresence |
+
+### 4. Coding Conventions
 - Component naming style (PascalCase, camelCase, kebab-case)
 - File extensions (.tsx, .jsx, .ts, .js)
 - Test file naming (.test., .spec.)
 - Index/barrel exports
 - Import alias patterns
 
-### 4. TypeScript Configuration
+### 5. TypeScript Configuration
 - Strict mode
 - Base URL and path aliases
 - Target and JSX settings
 
-### 5. Project Setup
+### 6. Project Setup
 - README presence
 - CONTRIBUTING guidelines
 - LICENSE file

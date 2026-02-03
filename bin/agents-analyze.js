@@ -106,6 +106,7 @@ const isReportOnly = args.includes('--report');
 const isVerifyOnly = args.includes('--verify');
 const isHelp = args.includes('--help') || args.includes('-h');
 const isVerbose = args.includes('--verbose') || args.includes('-v');
+const isGuided = args.includes('--guided') || args.includes('-g');
 
 if (isHelp) {
   console.log(`
@@ -113,6 +114,7 @@ ${colors.bright}agents-analyze${colors.reset} - Analyze and customize AI agent c
 
 ${colors.bright}Usage:${colors.reset}
   npx agents-analyze              Analyze codebase and update agent files
+  npx agents-analyze --guided     Interactive mode with customization questions
   npx agents-analyze --dry-run    Preview changes without writing files
   npx agents-analyze --report     Generate analysis report only
   npx agents-analyze --verify     Verify current configuration
@@ -168,6 +170,120 @@ async function question(rl, query) {
 async function confirm(rl, prompt) {
   const answer = await question(rl, `${colors.bright}${prompt} (y/n)${colors.reset} `);
   return answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes';
+}
+
+async function promptText(rl, prompt, defaultValue = '') {
+  const defaultHint = defaultValue ? ` (default: ${defaultValue})` : '';
+  const answer = await question(rl, `${colors.bright}${prompt}${colors.reset}${colors.dim}${defaultHint}${colors.reset}\n> `);
+  return answer.trim() || defaultValue;
+}
+
+async function selectOption(rl, prompt, options) {
+  console.log(`\n${colors.bright}${prompt}${colors.reset}`);
+  options.forEach((opt, i) => {
+    console.log(`  ${i + 1}. ${opt}`);
+  });
+  const answer = await question(rl, '\n> ');
+  const index = parseInt(answer.trim()) - 1;
+  return (index >= 0 && index < options.length) ? options[index] : options[0];
+}
+
+/**
+ * Run guided customization prompts
+ */
+async function runGuidedMode(rl, analysis, patterns) {
+  const customizations = {
+    projectDescription: '',
+    componentPatterns: [],
+    stateManagementNotes: '',
+    dataFetchingNotes: '',
+    errorHandlingApproach: '',
+    dosAndDonts: { dos: [], donts: [] },
+    domainRules: [],
+  };
+  
+  log.header('📋 Guided Customization');
+  log.info('Answer these questions to customize PROJECT-CONTEXT.md for your codebase.\n');
+  log.info('Press Enter to skip any question.\n');
+  
+  // Project description
+  customizations.projectDescription = await promptText(
+    rl,
+    '1. Describe what this project does (one sentence):',
+    analysis.readme?.description || ''
+  );
+  
+  // Component patterns
+  console.log('');
+  const compPatternOptions = [
+    'Compound components (Menu, Menu.Item, Menu.Trigger)',
+    'Render props for customization',
+    'Higher-order components (HOCs)',
+    'Hooks for shared logic',
+    'Container/Presentational pattern',
+    'None/Other',
+  ];
+  const compPattern = await selectOption(rl, '2. What component composition pattern do you use?', compPatternOptions);
+  if (compPattern !== 'None/Other') {
+    customizations.componentPatterns.push(compPattern);
+  }
+  
+  // State management notes (if detected)
+  if (patterns.stateManagement) {
+    console.log('');
+    log.info(`Detected: ${patterns.stateManagement.tool}`);
+    customizations.stateManagementNotes = await promptText(
+      rl,
+      `3. Any specific ${patterns.stateManagement.tool} patterns or store structure?`,
+      ''
+    );
+  }
+  
+  // Error handling
+  console.log('');
+  const errorOptions = [
+    'Error boundaries + fallback UI',
+    'Toast notifications for errors',
+    'Inline error messages',
+    'Centralized error logging (Sentry, etc.)',
+    'Custom error pages (404, 500)',
+  ];
+  const errorApproach = await selectOption(rl, '4. How do you handle errors?', errorOptions);
+  customizations.errorHandlingApproach = errorApproach;
+  
+  // Do's and Don'ts
+  console.log('');
+  log.subheader("5. What should AI agents ALWAYS do in this codebase?");
+  log.info("(Enter one per line, empty line to finish)");
+  while (true) {
+    const doItem = await question(rl, `${colors.green}✓${colors.reset} `);
+    if (!doItem.trim()) break;
+    customizations.dosAndDonts.dos.push(doItem.trim());
+  }
+  
+  console.log('');
+  log.subheader("6. What should AI agents NEVER do in this codebase?");
+  log.info("(Enter one per line, empty line to finish)");
+  while (true) {
+    const dontItem = await question(rl, `${colors.red}✗${colors.reset} `);
+    if (!dontItem.trim()) break;
+    customizations.dosAndDonts.donts.push(dontItem.trim());
+  }
+  
+  // Domain rules
+  console.log('');
+  log.subheader("7. Any domain-specific rules? (e.g., 'All prices in cents', 'IDs are UUIDs')");
+  log.info("(Enter one per line, empty line to finish)");
+  while (true) {
+    const rule = await question(rl, `${colors.blue}→${colors.reset} `);
+    if (!rule.trim()) break;
+    customizations.domainRules.push(rule.trim());
+  }
+  
+  console.log('');
+  log.success('Customization complete!');
+  
+  return customizations;
 }
 
 /**
@@ -529,6 +645,195 @@ function analyzeTypeScriptConfig(projectDir) {
 }
 
 /**
+ * Detect development patterns from dependencies and code
+ */
+function detectPatterns(packageJson, categories) {
+  const patterns = {
+    stateManagement: null,
+    dataFetching: null,
+    formHandling: null,
+    styling: null,
+    animation: null,
+    routing: null,
+    validation: null,
+    apiLayer: null,
+    errorHandling: null,
+    componentComposition: null,
+  };
+  
+  const features = packageJson.features || [];
+  
+  // State Management Detection
+  if (features.includes('Redux')) {
+    patterns.stateManagement = {
+      tool: 'Redux Toolkit',
+      description: 'Use Redux Toolkit for global state. Store slices in `/store` or `/redux`. Use `createSlice` for reducers.',
+      rules: [
+        'Keep reducers pure - no side effects',
+        'Use RTK Query for API state when possible',
+        'Normalize nested data with `createEntityAdapter`',
+      ],
+    };
+  } else if (features.includes('Zustand')) {
+    patterns.stateManagement = {
+      tool: 'Zustand',
+      description: 'Use Zustand stores for global state. Keep stores small and focused.',
+      rules: [
+        'One store per domain (userStore, cartStore)',
+        'Use `persist` middleware for localStorage sync',
+        'Prefer selectors to prevent unnecessary re-renders',
+      ],
+    };
+  } else if (features.includes('Jotai')) {
+    patterns.stateManagement = {
+      tool: 'Jotai',
+      description: 'Use Jotai atoms for atomic state management.',
+      rules: [
+        'Define atoms in dedicated files (atoms/*.ts)',
+        'Use derived atoms for computed values',
+        'Prefer `atomWithStorage` for persisted state',
+      ],
+    };
+  } else {
+    patterns.stateManagement = {
+      tool: 'React Context + useState',
+      description: 'Use React Context for shared state, useState for local state.',
+      rules: [
+        'Context for auth, theme, and other app-wide state',
+        'URL state for filters, tabs, pagination',
+        'Avoid prop drilling beyond 2-3 levels',
+      ],
+    };
+  }
+  
+  // Data Fetching Detection
+  if (features.includes('TanStack Query')) {
+    patterns.dataFetching = {
+      tool: 'TanStack Query',
+      description: 'Use TanStack Query for server state management.',
+      rules: [
+        'Define query keys as constants',
+        'Use `useQuery` for reads, `useMutation` for writes',
+        'Configure staleTime and cacheTime appropriately',
+        'Implement optimistic updates for better UX',
+      ],
+    };
+  } else if (packageJson.framework?.includes('Next')) {
+    patterns.dataFetching = {
+      tool: 'Next.js Server Actions + fetch',
+      description: 'Use Server Actions for mutations, fetch with caching for reads.',
+      rules: [
+        "Use 'use server' for server-side mutations",
+        'Leverage Next.js fetch caching and revalidation',
+        'Use `revalidatePath` or `revalidateTag` after mutations',
+      ],
+    };
+  } else {
+    patterns.dataFetching = {
+      tool: 'fetch/axios',
+      description: 'Use fetch or axios for API calls.',
+      rules: [
+        'Centralize API calls in /api or /services folder',
+        'Handle loading, error, and success states',
+        'Implement proper error boundaries',
+      ],
+    };
+  }
+  
+  // Form Handling Detection
+  if (features.includes('React Hook Form')) {
+    patterns.formHandling = {
+      tool: 'React Hook Form',
+      description: 'Use React Hook Form for all forms.',
+      rules: [
+        'Use `useForm` with Zod resolver for validation',
+        'Define form schemas with Zod',
+        'Use Controller for controlled components (MUI, etc.)',
+        'Show inline validation errors near fields',
+      ],
+    };
+  } else {
+    patterns.formHandling = {
+      tool: 'Controlled components',
+      description: 'Use controlled form components with useState.',
+      rules: [
+        'Validate on blur and on submit',
+        'Disable submit button during submission',
+        'Focus first error field on validation failure',
+      ],
+    };
+  }
+  
+  // Validation Detection
+  if (features.includes('Zod validation')) {
+    patterns.validation = {
+      tool: 'Zod',
+      description: 'Use Zod for runtime validation and type inference.',
+      rules: [
+        'Define schemas in /schemas or alongside forms',
+        'Use `z.infer<typeof schema>` for TypeScript types',
+        'Validate API responses with Zod',
+        'Use `.safeParse()` for user input',
+      ],
+    };
+  }
+  
+  // Animation Detection
+  if (features.includes('Framer Motion')) {
+    patterns.animation = {
+      tool: 'Framer Motion',
+      description: 'Use Framer Motion for animations.',
+      rules: [
+        'Use `motion` components for animated elements',
+        'Define animation variants for reusability',
+        'Use `AnimatePresence` for exit animations',
+        'Respect `prefers-reduced-motion`',
+      ],
+    };
+  }
+  
+  // Styling patterns (already detected, add rules)
+  if (packageJson.styling === 'Tailwind CSS') {
+    patterns.styling = {
+      tool: 'Tailwind CSS',
+      description: 'Use Tailwind utility classes for styling.',
+      rules: [
+        'Use `cn()` helper for conditional classes',
+        'Extract repeated patterns to components, not @apply',
+        'Use CSS variables for theme tokens',
+        'Mobile-first responsive design (sm:, md:, lg:)',
+      ],
+    };
+  } else if (packageJson.styling === 'Material-UI') {
+    patterns.styling = {
+      tool: 'Material-UI (MUI)',
+      description: 'Use MUI components and sx prop for styling.',
+      rules: [
+        'Use `sx` prop for one-off styles',
+        'Use `styled()` for reusable styled components',
+        'Theme tokens via `theme.palette`, `theme.spacing`',
+        'Support light/dark mode via MUI theming',
+      ],
+    };
+  }
+  
+  // Component composition patterns
+  if (categories?.components?.length > 20) {
+    patterns.componentComposition = {
+      description: 'Large component library detected.',
+      rules: [
+        'Use compound components for complex UI (Menu, Menu.Item)',
+        'Prefer composition over props for flexibility',
+        'Create shared primitives (Button, Input, Card)',
+        'Use render props or children for customization',
+      ],
+    };
+  }
+  
+  return patterns;
+}
+
+/**
  * Detect existing .agents-project.json configuration
  */
 function loadProjectConfig(projectDir) {
@@ -799,7 +1104,7 @@ function generateAnalysisReport(analysis) {
 /**
  * Generate PROJECT-CONTEXT.md for AI consumption
  */
-function generateProjectContext(analysis) {
+function generateProjectContext(analysis, patterns = null, customizations = null) {
   const lines = [];
   
   lines.push('# Project Context');
@@ -816,8 +1121,10 @@ function generateProjectContext(analysis) {
   if (analysis.packageJson.name) {
     lines.push(`- **Name:** ${analysis.packageJson.name}`);
   }
-  if (analysis.readme?.description) {
-    lines.push(`- **Purpose:** ${analysis.readme.description}`);
+  // Use customization description if provided, otherwise fallback to readme
+  const description = customizations?.projectDescription || analysis.readme?.description;
+  if (description) {
+    lines.push(`- **Purpose:** ${description}`);
   }
   lines.push('');
   
@@ -893,15 +1200,168 @@ function generateProjectContext(analysis) {
     lines.push('');
   }
   
+  // Project-Specific Patterns section - now with auto-detected patterns!
   lines.push('## Project-Specific Patterns');
   lines.push('');
-  lines.push('<!-- Add project-specific patterns, conventions, and notes below -->');
-  lines.push('');
-  lines.push('- [ ] TODO: Document component composition patterns');
-  lines.push('- [ ] TODO: Document state management approach');
-  lines.push('- [ ] TODO: Document API/data fetching patterns');
-  lines.push('- [ ] TODO: Document error handling conventions');
-  lines.push('');
+  
+  // State Management (auto-detected)
+  if (patterns?.stateManagement) {
+    lines.push('### State Management');
+    lines.push('');
+    lines.push(`**${patterns.stateManagement.tool}**: ${patterns.stateManagement.description}`);
+    lines.push('');
+    for (const rule of patterns.stateManagement.rules) {
+      lines.push(`- ${rule}`);
+    }
+    if (customizations?.stateManagementNotes) {
+      lines.push('');
+      lines.push(`> **Project note:** ${customizations.stateManagementNotes}`);
+    }
+    lines.push('');
+  }
+  
+  // Data Fetching (auto-detected)
+  if (patterns?.dataFetching) {
+    lines.push('### Data Fetching');
+    lines.push('');
+    lines.push(`**${patterns.dataFetching.tool}**: ${patterns.dataFetching.description}`);
+    lines.push('');
+    for (const rule of patterns.dataFetching.rules) {
+      lines.push(`- ${rule}`);
+    }
+    lines.push('');
+  }
+  
+  // Form Handling (auto-detected)
+  if (patterns?.formHandling) {
+    lines.push('### Form Handling');
+    lines.push('');
+    lines.push(`**${patterns.formHandling.tool}**: ${patterns.formHandling.description}`);
+    lines.push('');
+    for (const rule of patterns.formHandling.rules) {
+      lines.push(`- ${rule}`);
+    }
+    lines.push('');
+  }
+  
+  // Validation (auto-detected)
+  if (patterns?.validation) {
+    lines.push('### Validation');
+    lines.push('');
+    lines.push(`**${patterns.validation.tool}**: ${patterns.validation.description}`);
+    lines.push('');
+    for (const rule of patterns.validation.rules) {
+      lines.push(`- ${rule}`);
+    }
+    lines.push('');
+  }
+  
+  // Styling (auto-detected)
+  if (patterns?.styling) {
+    lines.push('### Styling');
+    lines.push('');
+    lines.push(`**${patterns.styling.tool}**: ${patterns.styling.description}`);
+    lines.push('');
+    for (const rule of patterns.styling.rules) {
+      lines.push(`- ${rule}`);
+    }
+    lines.push('');
+  }
+  
+  // Animation (auto-detected)
+  if (patterns?.animation) {
+    lines.push('### Animation');
+    lines.push('');
+    lines.push(`**${patterns.animation.tool}**: ${patterns.animation.description}`);
+    lines.push('');
+    for (const rule of patterns.animation.rules) {
+      lines.push(`- ${rule}`);
+    }
+    lines.push('');
+  }
+  
+  // Component Composition (from customization or auto-detected)
+  if (customizations?.componentPatterns?.length > 0 || patterns?.componentComposition) {
+    lines.push('### Component Composition');
+    lines.push('');
+    if (customizations?.componentPatterns?.length > 0) {
+      lines.push(`**Pattern:** ${customizations.componentPatterns.join(', ')}`);
+      lines.push('');
+    }
+    if (patterns?.componentComposition?.rules) {
+      for (const rule of patterns.componentComposition.rules) {
+        lines.push(`- ${rule}`);
+      }
+      lines.push('');
+    }
+  }
+  
+  // Error Handling (from customization)
+  if (customizations?.errorHandlingApproach) {
+    lines.push('### Error Handling');
+    lines.push('');
+    lines.push(`**Approach:** ${customizations.errorHandlingApproach}`);
+    lines.push('');
+  }
+  
+  // Do's and Don'ts (from customization)
+  if (customizations?.dosAndDonts?.dos?.length > 0 || customizations?.dosAndDonts?.donts?.length > 0) {
+    lines.push('## Do\'s and Don\'ts');
+    lines.push('');
+    
+    if (customizations.dosAndDonts.dos?.length > 0) {
+      lines.push('### ✅ Always Do');
+      lines.push('');
+      for (const item of customizations.dosAndDonts.dos) {
+        lines.push(`- ${item}`);
+      }
+      lines.push('');
+    }
+    
+    if (customizations.dosAndDonts.donts?.length > 0) {
+      lines.push('### ❌ Never Do');
+      lines.push('');
+      for (const item of customizations.dosAndDonts.donts) {
+        lines.push(`- ${item}`);
+      }
+      lines.push('');
+    }
+  }
+  
+  // Domain Rules (from customization)
+  if (customizations?.domainRules?.length > 0) {
+    lines.push('## Domain Rules');
+    lines.push('');
+    for (const rule of customizations.domainRules) {
+      lines.push(`- ${rule}`);
+    }
+    lines.push('');
+  }
+  
+  // If no patterns were detected and no customizations, show TODOs
+  const hasPatterns = patterns && Object.values(patterns).some(p => p !== null);
+  const hasCustomizations = customizations && (
+    customizations.projectDescription ||
+    customizations.componentPatterns?.length > 0 ||
+    customizations.dosAndDonts?.dos?.length > 0 ||
+    customizations.dosAndDonts?.donts?.length > 0 ||
+    customizations.domainRules?.length > 0
+  );
+  
+  if (!hasPatterns && !hasCustomizations) {
+    lines.push('<!-- No patterns detected. Run `npx agents-analyze --guided` to add customizations -->');
+    lines.push('');
+    lines.push('- [ ] TODO: Document component composition patterns');
+    lines.push('- [ ] TODO: Document state management approach');
+    lines.push('- [ ] TODO: Document API/data fetching patterns');
+    lines.push('- [ ] TODO: Document error handling conventions');
+    lines.push('');
+  } else if (!hasCustomizations) {
+    lines.push('---');
+    lines.push('');
+    lines.push('> 💡 **Tip:** Run `npx agents-analyze --guided` to add custom Do\'s/Don\'ts and domain rules.');
+    lines.push('');
+  }
   
   return lines.join('\n');
 }
@@ -1078,9 +1538,18 @@ async function main() {
       process.exit(0);
     }
     
+    // Detect patterns from dependencies
+    const patterns = detectPatterns(packageJson, categories);
+    
+    // Run guided mode if requested
+    let customizations = null;
+    if (isGuided) {
+      customizations = await runGuidedMode(rl, analysis, patterns);
+    }
+    
     // Generate reports
     const analysisReport = generateAnalysisReport(analysis);
-    const projectContext = generateProjectContext(analysis);
+    const projectContext = generateProjectContext(analysis, patterns, customizations);
     
     // Report only mode
     if (isReportOnly) {
