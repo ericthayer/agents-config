@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/ericthayer/agents-config/compare/v1.2.2...v1.3.0) (2026-02-03)
+
+
+### Features
+
+* include .github templates and workflows in npx agents-init ([#9](https://github.com/ericthayer/agents-config/issues/9)) ([f12dfc9](https://github.com/ericthayer/agents-config/commit/f12dfc9574a5884d4970a03d201a0819112ee9ab))
+
 ## [1.2.2](https://github.com/ericthayer/agents-config/compare/v1.2.1...v1.2.2) (2026-02-01)
 
 
