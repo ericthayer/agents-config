@@ -44,8 +44,9 @@ npx agents-init --help       # Show help
 npx agents-analyze           # Scan codebase and generate context
 npx agents-analyze --guided  # Interactive customization mode
 npx agents-analyze --dry-run # Preview analysis without writing
-npx agents-analyze --report  # Generate report only
-npx agents-analyze --verify  # Verify configuration
+npx agents-analyze --report  # Generate analysis report only
+npx agents-analyze --verify  # Verify existing configuration
+npx agents-analyze --verbose # Show detailed output
 ```
 
 ## Supported AI Agents
