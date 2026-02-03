@@ -13,6 +13,10 @@
 
 This project follows shared agentic configuration guidelines. All rules, skills, and instructions are in the `.agents/` folder:
 
+**📋 Start here:**
+- **[.agents/AGENTS.md](.agents/AGENTS.md)** - Core coding guidelines and rules
+- **[.agents/PROJECT-CONTEXT.md](.agents/PROJECT-CONTEXT.md)** - Project-specific patterns (run `npx agents-analyze` to generate)
+
 ### Core Rules
 {{RULES_LIST}}
 
