@@ -50,7 +50,7 @@ Complete AI development framework with three layers:
 - **Created**: `vitest.config.ts` with jsdom environment and jest-dom setup
 - **Added**: `src/tests/setup.ts` for test initialization
 - **Created**: Example tests:
-  - `src/tests/BrutalistButton.test.tsx` - Component testing pattern
+  - `src/tests/Button.test.tsx` - Component testing pattern
   - `src/tests/geminiService.test.ts` - Service mocking pattern
 - **Updated**: `package.json` with test scripts (test, test:ui, test:coverage)
 - **Updated**: `tsconfig.json` with vitest and @testing-library/jest-dom types

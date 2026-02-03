@@ -99,10 +99,20 @@ const DATABASES = {
 const CORE_RULES = ['accessibility', 'component-architecture', 'spec-driven-development', 'web-performance'];
 
 // Core skills always included
-const CORE_SKILLS = ['accessibility-audit', 'scaffold-component'];
+const CORE_SKILLS = ['accessibility-audit', 'scaffold-component', 'workflows'];
+
+// Core skill workflows always included
 
 // Core instructions always included
 const CORE_INSTRUCTIONS = ['development-standards', 'web-interface-guidelines'];
+
+// .github files to include (excluding workflows which are package-specific)
+const GITHUB_FILES = [
+  'COMMIT_CONVENTION.md',
+  'GITHUB_AUTH_SETUP.md',
+  'pr-template-commits.md',
+  'pr-body-semantic-release.md',
+];
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -127,12 +137,19 @@ ${colors.bright}Description:${colors.reset}
   2. Creates adapter files for your AI coding assistants
   3. Creates .agents-project.json for project-specific config
 
-${colors.bright}What gets copied to .agents/:${colors.reset}
-  - AGENTS.md (core guidelines)
-  - prompts/ (reusable AI workflow templates)
-  - rules/ (coding standards based on your stack)
-  - skills/ (specialized workflows)
-  - instructions/ (process guidelines)
+${colors.bright}What gets copied:${colors.reset}
+  .agents/
+    - AGENTS.md (core guidelines)
+    - prompts/ (reusable AI workflow templates)
+    - rules/ (coding standards based on your stack)
+    - skills/ (specialized workflows)
+    - instructions/ (process guidelines)
+  
+  .github/
+    - COMMIT_CONVENTION.md (conventional commits guide)
+    - GITHUB_AUTH_SETUP.md (GitHub CLI/token setup)
+    - pr-template-commits.md (PR description template)
+    - pr-body-semantic-release.md (semantic release PR template)
 
 ${colors.bright}Supported Agents:${colors.reset}
   - GitHub Copilot (.github/copilot-instructions.md)
@@ -280,9 +297,6 @@ function determineRules(config) {
   if (config.database === 'supabase') rules.push('supabase');
   if (config.gemini) rules.push('gemini');
   if (config.threejs) rules.push('three-js-react');
-  
-  // Always include web-performance
-  rules.push('web-performance');
   
   return rules;
 }
@@ -442,6 +456,26 @@ function copyAgentsFolder(projectDir, config, filesToCreate) {
   return filesToCreate;
 }
 
+function copyGithubFolder(projectDir, filesToCreate) {
+  const githubDir = path.join(projectDir, '.github');
+  
+  // Copy individual .github files (not workflows)
+  for (const file of GITHUB_FILES) {
+    const src = path.join(PACKAGE_ROOT, '.github', file);
+    const dest = path.join(githubDir, file);
+    if (fs.existsSync(src)) {
+      filesToCreate.push({
+        src,
+        dest,
+        relativePath: `.github/${file}`,
+        type: 'file',
+      });
+    }
+  }
+  
+  return filesToCreate;
+}
+
 function loadTemplate(templateName) {
   const templatePath = path.join(PACKAGE_ROOT, 'adapters', templateName);
   if (fs.existsSync(templatePath)) {
@@ -546,6 +580,11 @@ async function main() {
     // Add .agents folder contents
     copyAgentsFolder(projectDir, config, filesToCreate);
     
+    // Add .github folder contents only when GitHub Copilot is selected
+    if (selectedAgents.includes('copilot')) {
+      copyGithubFolder(projectDir, filesToCreate);
+    }
+    
     // Add agent adapter files
     for (const agentKey of selectedAgents) {
       const agent = AGENTS[agentKey];
@@ -587,6 +626,11 @@ async function main() {
     
     console.log(`\n${colors.bright}.agents/ folder:${colors.reset}`);
     filesToCreate.filter(f => f.relativePath.startsWith('.agents/')).forEach(f => {
+      log.file(f.relativePath);
+    });
+    
+    console.log(`\n${colors.bright}.github/ folder:${colors.reset}`);
+    filesToCreate.filter(f => f.relativePath.startsWith('.github/') && f.type === 'file').forEach(f => {
       log.file(f.relativePath);
     });
     
@@ -654,6 +698,9 @@ ${colors.cyan}What was created:${colors.reset}
   ${colors.bright}.agents/${colors.reset}
     Your project's local copy of rules, skills, and instructions.
     AI agents can read these files for context.
+
+  ${colors.bright}.github/${colors.reset}
+    PR templates, commit conventions, and GitHub workflow guides.
 
   ${colors.bright}Adapter files${colors.reset}
     Thin config files that reference .agents/ for each AI tool.
