@@ -11,6 +11,11 @@ permissions:
   pull-requests: write
   id-token: write
 
+# Ensure only one release workflow runs at a time
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Semantic Release
