@@ -15,7 +15,7 @@ Modern developers don't use just one AI assistant. We switch between:
 - **Codex (OpenAI)** for OpenAI-powered workflows
 - **Windsurf (Codeium)** for fast autocomplete and code intelligence
 
-Each has different capabilities, different instruction formats, and different expectations. Keeping them aligned is a nightmare.
+Each has different capabilities, different instruction formats, and different expectations. Keeping them aligned manually is a maintenance nightmare.
 
 ## How agents-config Works
 
