@@ -1,3 +1,15 @@
+## [1.4.3](https://github.com/ericthayer/agents-config/compare/v1.4.2...v1.4.3) (2026-02-08)
+
+
+### Bug Fixes
+
+* remove prompt references ([#12](https://github.com/ericthayer/agents-config/issues/12)) ([b8db16a](https://github.com/ericthayer/agents-config/commit/b8db16a5ce2bc1947c44b4fbba028d4e3654e9e6))
+
+
+### Reverts
+
+* remove release trigger from static.yml (revert fd4a42c) ([819d5d9](https://github.com/ericthayer/agents-config/commit/819d5d930613c15e9990fa05b98781cd486573b6))
+
 ## [1.4.2](https://github.com/ericthayer/agents-config/compare/v1.4.1...v1.4.2) (2026-02-03)
 
 
