@@ -105,8 +105,6 @@ Include the following specifications:
 ### 1. Component Scaffolding Agent
 **Purpose**: Create new React components following project architecture patterns
 
-**Prompt**: Use [scaffold-component.prompt.md](./prompts/scaffold-component.prompt.md)
-
 **Skill**: [scaffold-component](./skills/scaffold-component/SKILL.md)
 
 **Capabilities**:
@@ -253,7 +251,7 @@ Maintain backward compatibility (minor version bump)
 ### 6. Pull Request Agent
 **Purpose**: Generate comprehensive PR descriptions from git commits
 
-**Prompt**: Use [create-pr.prompt.md](./prompts/create-pr.prompt.md)
+**Skill**: Use [create-pr.md](./skills/github-automation/create-pr.md)
 
 **Capabilities**:
 - Analyzes git commit history and diffs
@@ -408,12 +406,6 @@ Include: accessibility section, code examples, interactive controls
 | `rules/three-js-react.md` | 3D graphics integration | Component Scaffolding (when Three.js detected) |
 | `rules/supabase.md` | Backend integration patterns | AI Integration, Component Scaffolding |
 
-### Prompts
-| File | Purpose | Agent Usage |
-|------|---------|-------------|
-| `prompts/scaffold-component.prompt.md` | Component creation template | Component Scaffolding |
-| `prompts/create-pr.prompt.md` | PR description template | Pull Request |
-
 ### Skills
 | Directory | Purpose | Agent Usage |
 |-----------|---------|-------------|
@@ -421,6 +413,7 @@ Include: accessibility section, code examples, interactive controls
 | `skills/scaffold-component/` | Component scaffolding workflow | Component Scaffolding |
 | `skills/integrate-gemini/` | AI integration patterns | AI Integration |
 | `skills/workflows/` | Development workflows (SDD, setup) | All agents following SDD |
+| `skills/github-automation/` | PR description template | Pull Request |
 
 ---
 
@@ -486,5 +479,5 @@ To extend or modify this agents knowledge base:
 
 ---
 
-**Last Updated**: January 31, 2026
+**Last Updated**: February 7, 2026
 
