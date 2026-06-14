@@ -80,7 +80,6 @@ agents-config/
 ├── pnpm-workspace.yaml         # or npm workspaces
 ├── turbo.json                  # Optional: Turborepo for builds
 ├── README.md
-├── ABOUT.md
 ├── CONTRIBUTING.md
 └── LICENSE
 ```
