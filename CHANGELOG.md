@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/ericthayer/agents-config/compare/v1.4.3...v1.5.0) (2026-06-14)
+
+
+### Features
+
+* add external agent-skills integration guidance and CLI hints ([77cb9a3](https://github.com/ericthayer/agents-config/commit/77cb9a35a138f0f8823a66e5c471caaaee09501c))
+
 ## [1.4.3](https://github.com/ericthayer/agents-config/compare/v1.4.2...v1.4.3) (2026-02-08)
 
 
