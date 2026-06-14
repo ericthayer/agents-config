@@ -4,9 +4,13 @@ node_modules/
 .npm/
 .vscode/
 .skill-lock.json
+skills-lock.json
 .env
 .env.local
 *.tgz
+
+# Local external skill-pack install artifacts
+.agents/
 
 # Test directories (will be created for testing)
 test-app/
