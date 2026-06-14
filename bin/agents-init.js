@@ -349,7 +349,7 @@ function determineSkills(config) {
   if (config.gemini) skills.push('integrate-gemini');
   if (config.agents.includes('copilot')) skills.push('github-automation');
   
-  // Additional skills can be installed via: npx add-skill vercel-labs/agent-skills
+  // Additional skill packs can be installed via: npx skills add <owner/repo>
   
   return skills;
 }
@@ -748,8 +748,11 @@ ${colors.cyan}Next steps:${colors.reset}
 
 ${colors.cyan}Optional skills:${colors.reset}
 
-  ${colors.bright}npx add-skill vercel-labs/agent-skills${colors.reset}
-    Install Vercel's React best practices (45+ performance rules)
+  ${colors.bright}npx skills add addyosmani/agent-skills${colors.reset}
+    Install Agent Skills lifecycle workflows and specialist agents (24 skills)
+
+  ${colors.bright}npx skills add vercel-labs/agent-skills${colors.reset}
+    Install Vercel React best practices (performance-focused)
 
 ${colors.cyan}Useful commands:${colors.reset}
 
