@@ -1,10 +1,15 @@
-# Manual Publish (Backup)
-# This workflow runs on manual version tags if semantic-release isn't used.
-# Primary releases now use .github/workflows/release.yml with semantic-release.
+# Publish to npm
+# Triggered automatically when semantic-release creates a GitHub release (release.yml),
+# or manually via workflow_dispatch / version tags as a backup.
+# IMPORTANT: NPM_TOKEN must be an npm "Automation" token (bypasses 2FA/OTP).
+#   Create one at https://www.npmjs.com/settings/<user>/tokens → "Granular Access Token"
+#   with "Automation" permission and add it as the NPM_TOKEN repository secret.
 
-name: Publish to npm (Manual)
+name: Publish to npm
 
 on:
+  release:
+    types: [published]
   push:
     tags:
       - 'v*'

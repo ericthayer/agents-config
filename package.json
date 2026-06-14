@@ -1,12 +1,12 @@
 {
   "name": "agents-config",
-  "version": "1.6.0",
+  "version": "1.5.0",
   "description": "A comprehensive knowledge base and skill library for building production-grade React applications with AI-powered tools and best practices.",
   "author": "Eric Thayer",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ericthayer/agents-config.git"
+    "url": "git+https://github.com/ericthayer/agents-config.git"
   },
   "homepage": "https://github.com/ericthayer/agents-config#readme",
   "bugs": {
@@ -29,8 +29,8 @@
   ],
   "type": "module",
   "bin": {
-    "agents-init": "./bin/agents-init.js",
-    "agents-analyze": "./bin/agents-analyze.js"
+    "agents-init": "bin/agents-init.js",
+    "agents-analyze": "bin/agents-analyze.js"
   },
   "files": [
     ".github/COMMIT_CONVENTION.md",

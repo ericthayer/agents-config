@@ -1,3 +1,12 @@
+# [1.5.0](https://github.com/ericthayer/agents-config/compare/v1.4.3...v1.5.0) (2026-06-14)
+
+
+### Features
+
+* add external agent-skills integration guidance and CLI hints ([77cb9a3](https://github.com/ericthayer/agents-config/commit/77cb9a35a138f0f8823a66e5c471caaaee09501c))
+* remove ABOUT.md and update README with rationale for agents-config ([60300af](https://github.com/ericthayer/agents-config/commit/60300af60d5ae20416162b60ef73aea3efe88e08))
+* resolve Semantic Release EOTP failure by decoupling npm publish ([cfbe1c6](https://github.com/ericthayer/agents-config/commit/cfbe1c6ac99a6df1446d23f7224c12f9a88a9c2b))
+
 # [1.6.0](https://github.com/ericthayer/agents-config/compare/v1.5.0...v1.6.0) (2026-06-14)
 
 
