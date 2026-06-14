@@ -35,7 +35,11 @@ jobs:
       - name: Verify version matches tag
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_VERSION="${{ github.event.inputs.version }}"
+          else
+            TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          fi
           if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
             echo "Error: package.json version ($PACKAGE_VERSION) doesn't match tag ($TAG_VERSION)"
             exit 1
