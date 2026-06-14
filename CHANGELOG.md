@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/ericthayer/agents-config/compare/v1.5.0...v1.6.0) (2026-06-14)
+
+
+### Features
+
+* remove ABOUT.md and update README with rationale for agents-config ([60300af](https://github.com/ericthayer/agents-config/commit/60300af60d5ae20416162b60ef73aea3efe88e08))
+
 # [1.5.0](https://github.com/ericthayer/agents-config/compare/v1.4.3...v1.5.0) (2026-06-14)
 
 
