@@ -28,6 +28,12 @@ When integrating Gemini features into this project, follow the patterns in:
 - `.agents/rules/gemini.md` - Gemini integration guidelines
 - `.agents/skills/integrate-gemini/SKILL.md` - Integration workflow
 
+### Optional: Agent Skills lifecycle pack
+
+- Install: `npx skills add addyosmani/agent-skills`
+- Start with: `.agents/skills/using-agent-skills/SKILL.md`
+- Keep only always-on conventions in config; load lifecycle skills on demand when possible
+
 ## Code Generation Preferences
 
 ### TypeScript Standards

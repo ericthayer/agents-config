@@ -26,6 +26,14 @@ This project follows shared agentic configuration:
 - `.agents/skills/scaffold-component/SKILL.md` - Component scaffolding workflow
 - `.agents/skills/integrate-gemini/SKILL.md` - AI integration patterns
 
+### Optional: Agent Skills lifecycle pack
+
+You can install `addyosmani/agent-skills` to add planning, testing, review, security, and shipping workflows:
+
+- Install: `npx skills add addyosmani/agent-skills`
+- Start with: `.agents/skills/using-agent-skills/SKILL.md`
+- Then load task-specific skills (for example: `planning-and-task-breakdown`, `test-driven-development`, `code-review-and-quality`)
+
 ## Agent Configuration
 
 ### Default Behavior

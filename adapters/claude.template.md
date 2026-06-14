@@ -30,6 +30,14 @@ For complex tasks, use these specialized skill workflows:
 - `.agents/skills/scaffold-component/SKILL.md` - Component scaffolding with specs
 - `.agents/skills/integrate-gemini/SKILL.md` - AI integration patterns (if enabled)
 
+### Optional: Agent Skills lifecycle pack
+
+Install additional workflows from `addyosmani/agent-skills`:
+
+- Install: `npx skills add addyosmani/agent-skills`
+- Start with: `.agents/skills/using-agent-skills/SKILL.md`
+- Use phase skills as needed (spec, planning, incremental implementation, review, ship)
+
 ### Instructions (in .agents/instructions/)
 
 Process guidelines for specific workflows like MUI theming, Storybook, etc.
