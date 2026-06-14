@@ -13,6 +13,19 @@ A comprehensive knowledge base and skill library for building production-grade R
 
 This package provides curated guidelines, instructions, skills, and rules for developing React/TypeScript applications. It serves as a **single source of truth** for AI-powered development agents and human developers to ensure consistency, accessibility, and performance across all your projects.
 
+## Why agents-config exists
+
+Modern teams rarely use just one AI coding assistant. It's common to switch between GitHub Copilot, Claude, Cursor, Gemini, Codex, and Windsurf depending on the task. Without a shared source of truth, instruction files drift and behavior becomes inconsistent across tools.
+
+`agents-config` solves this by centralizing your standards and generating the right adapter files per assistant from one maintained configuration.
+
+### What this gives you
+
+- **Consistency**: all assistants follow the same standards and workflows
+- **Portability**: same setup and expectations across projects
+- **Team alignment**: shared defaults for onboarding and collaboration
+- **Version control**: instruction changes are reviewable, auditable, and reversible
+
 ## Installation
 
 ```bash
