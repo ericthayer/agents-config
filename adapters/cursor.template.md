@@ -26,6 +26,12 @@ This project follows shared agentic configuration rules:
 - `.agents/skills/scaffold-component/SKILL.md` - Component generation
 - `.agents/skills/integrate-gemini/SKILL.md` - AI feature patterns
 
+### Optional: Agent Skills lifecycle pack
+
+- Install: `npx skills add addyosmani/agent-skills`
+- Start with: `.agents/skills/using-agent-skills/SKILL.md`
+- Prefer loading only relevant lifecycle skills per task to keep context focused
+
 ## Code Generation Rules
 
 When generating code, follow these principles:

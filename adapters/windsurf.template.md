@@ -28,6 +28,12 @@ This project uses shared agentic configuration:
 - `.agents/skills/scaffold-component/SKILL.md` - Component generation workflow
 - `.agents/skills/integrate-gemini/SKILL.md` - AI integration patterns
 
+### Optional: Agent Skills lifecycle pack
+
+- Install: `npx skills add addyosmani/agent-skills`
+- Start with: `.agents/skills/using-agent-skills/SKILL.md`
+- Use targeted skills for planning, build, test, review, and release tasks
+
 ## Code Generation Standards
 
 ### Component Architecture

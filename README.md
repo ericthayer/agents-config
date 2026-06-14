@@ -31,6 +31,22 @@ This will:
 3. Generate adapter files that reference the shared guidelines
 4. Create a `.agents-project.json` for project-specific configuration
 
+### Optional: Install external skill packs
+
+This project supports layering additional skill packs on top of the generated `.agents/` config.
+
+- **Agent Skills (addyosmani)** — full lifecycle workflows and review personas
+- **Vercel Agent Skills** — React and Next.js performance best practices
+
+Use the `skills` CLI:
+
+```bash
+npx skills add addyosmani/agent-skills
+npx skills add vercel-labs/agent-skills
+```
+
+> Note: `add-skill` is deprecated and now forwards to `skills`.
+
 ### CLI Options
 
 ```bash
@@ -180,6 +196,7 @@ Reference the appropriate skill or rule based on the development task:
 - Use `scaffold-component` when creating new components
 - Use `integrate-gemini` for AI feature implementation
 - Reference `web-performance` rules for optimization guidance
+- Optionally load `.agents/skills/using-agent-skills/SKILL.md` when the `addyosmani/agent-skills` pack is installed
 
 ### For Developers
 - Start with [AGENTS.md](AGENTS.md) for core principles

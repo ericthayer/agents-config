@@ -30,6 +30,16 @@ This project follows shared agentic configuration guidelines. All rules, skills,
 
 Process guidelines for development workflows.
 
+### Optional: Agent Skills pack
+
+If installed, Copilot can also discover skills from `.agents/skills/` or `.github/skills/`.
+
+- Install: `npx skills add addyosmani/agent-skills`
+- Start with: `.agents/skills/using-agent-skills/SKILL.md`
+- For review workflows, you can add personas under `.github/agents/*.agent.md`
+
+Reference: https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-skills
+
 ## Project-Specific Guidelines
 
 <!-- Add project-specific guidelines below -->
