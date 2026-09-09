@@ -15,3 +15,7 @@ skills-lock.json
 # Test directories (will be created for testing)
 test-app/
 .npmrc
+packages/react/content/
+packages/*/LICENSE
+packages/core/content/schemas/
+packages/core/content/skills/github-automation/

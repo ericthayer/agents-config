@@ -6,121 +6,23 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    
     strategy:
       matrix:
         node-version: [18, 20, 22]
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Verify CLI help
-        run: node bin/agents-init.js --help
-
-      - name: Verify CLI dry-run
-        run: |
-          echo "1" | node bin/agents-init.js --dry-run || true
-
-      - name: Verify file structure
-        run: |
-          echo "Checking required files exist..."
-          test -f AGENTS.md
-          test -f README.md
-          test -f LICENSE
-          test -f package.json
-          test -d rules
-          test -d skills
-          test -d instructions
-          test -d adapters
-          test -d bin
-          echo "✓ All required files present"
-
-      - name: Verify rules exist
-        run: |
-          echo "Checking rules..."
-          test -f rules/accessibility.md
-          test -f rules/component-architecture.md
-          test -f rules/gemini.md
-          test -f rules/mui.md
-          echo "✓ Core rules present"
-
-      - name: Verify skills exist
-        run: |
-          echo "Checking skills..."
-          test -f skills/accessibility-audit/SKILL.md
-          test -f skills/scaffold-component/SKILL.md
-          test -f skills/integrate-gemini/SKILL.md
-          test -f skills/github-automation/create-pr.md
-          test -f skills/workflows/sdd-workflow.md
-          test -f skills/workflows/setup-orchestration.md
-          echo "✓ Core skills present"
-
-      - name: Verify .github files exist
-        run: |
-          echo "Checking .github files..."
-          test -f .github/COMMIT_CONVENTION.md
-          test -f .github/GITHUB_AUTH_SETUP.md
-          test -f .github/pr-template-commits.md
-          test -f .github/pr-body-semantic-release.md
-          echo "✓ GitHub files present"
-
-      - name: Verify adapters exist
-        run: |
-          echo "Checking adapters..."
-          test -f adapters/copilot.template.md
-          test -f adapters/claude.template.md
-          test -f adapters/cursor.template.md
-          test -f adapters/gemini.template.md
-          echo "✓ Core adapters present"
-
-      - name: Verify npm pack contents
-        run: |
-          echo "Packing package to verify contents..."
-          npm pack --dry-run 2>&1 | tee pack-output.txt
-          
-          echo "Checking required files are in package..."
-          grep -q "AGENTS.md" pack-output.txt
-          grep -q "bin/agents-init.js" pack-output.txt
-          grep -q "adapters/copilot.template.md" pack-output.txt
-          grep -q "rules/accessibility.md" pack-output.txt
-          grep -q "skills/scaffold-component/SKILL.md" pack-output.txt
-          grep -q "skills/github-automation/create-pr.md" pack-output.txt
-          grep -q ".github/COMMIT_CONVENTION.md" pack-output.txt
-          
-          echo "✓ npm pack includes all required files"
-
-  test-install:
-    runs-on: ubuntu-latest
-    needs: test
-    
-    steps:
-      - name: Create test project
-        run: |
-          mkdir test-project
-          cd test-project
-          npm init -y
-          npm install react --save
-          
-      - name: Install agents-config from npm
-        run: |
-          cd test-project
-          npm install agents-config --save-dev
-          
-      - name: Verify CLI is accessible
-        run: |
-          cd test-project
-          npx agents-init --help
-          
-      - name: Verify dry-run works
-        run: |
-          cd test-project
-          echo "2" | npx agents-init --dry-run || true
+          cache: npm
+      - run: npm ci
+      - name: Contract and behavior tests
+        run: npm test
+      - name: Installed checkout tarballs
+        run: npm run test:packages
