@@ -1,62 +1,72 @@
-# Publish to npm
-# Triggered automatically when semantic-release creates a GitHub release (release.yml),
-# or manually via workflow_dispatch / version tags as a backup.
-# IMPORTANT: NPM_TOKEN must be an npm "Automation" token (bypasses 2FA/OTP).
-#   Create one at https://www.npmjs.com/settings/<user>/tokens → "Granular Access Token"
-#   with "Automation" permission and add it as the NPM_TOKEN repository secret.
-
 name: Publish to npm
 
+# Only this workflow publishes. Explicit invocation avoids GITHUB_TOKEN's
+# suppression of workflows triggered by automatically created tags/releases.
 on:
-  release:
-    types: [published]
-  push:
-    tags:
-      - 'v*'
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+      ref:
+        type: string
+        required: true
+      commit:
+        type: string
+        required: true
+    secrets:
+      NPM_TOKEN:
+        required: true
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (without v prefix)'
+        description: 'Existing release version, without v (for example 1.6.0)'
+        type: string
         required: true
+      ref:
+        description: 'Exact immutable release tag ref (for example refs/tags/v1.6.0)'
+        type: string
+        required: true
+      commit:
+        description: 'Optional full release commit SHA to verify against the tag'
+        type: string
+        required: false
+
+permissions:
+  contents: read
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      id-token: write
-    
+    # Job-level concurrency covers both reusable calls and manual retries.
+    concurrency:
+      group: agents-config-npm-publish
+      cancel-in-progress: false
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+      RELEASE_REF: ${{ inputs.ref }}
+      RELEASE_COMMIT: ${{ inputs.commit }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
         with:
-          node-version: '20'
+          fetch-depth: 0
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Verify version matches tag
-        run: |
-          PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TAG_VERSION="${{ github.event.inputs.version }}"
-          else
-            TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          fi
-          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
-            echo "Error: package.json version ($PACKAGE_VERSION) doesn't match tag ($TAG_VERSION)"
-            exit 1
-          fi
-          echo "Version $PACKAGE_VERSION matches tag"
+      - name: Validate tag and checkout before installing
+        run: node scripts/publish-packages.js --check-ref --version "$RELEASE_VERSION" --ref "$RELEASE_REF" --commit "$RELEASE_COMMIT"
 
-      - name: Run tests
-        run: |
-          node bin/agents-init.js --help
-          echo "1" | node bin/agents-init.js --dry-run || true
+      - run: npm ci
+      - run: npm run prepare:packages
+      - run: npm test
+      - run: npm run test:packages
 
-      - name: Publish to npm
-        run: npm publish --access public
+      - name: Preflight all artifacts and publish in dependency order
+        run: node scripts/publish-packages.js --version "$RELEASE_VERSION" --ref "$RELEASE_REF" --commit "$RELEASE_COMMIT"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

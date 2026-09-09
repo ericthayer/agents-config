@@ -9,51 +9,52 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
-  id-token: write
 
-# Ensure only one release workflow runs at a time
 concurrency:
-  group: release-${{ github.ref }}
+  group: agents-config-release
   cancel-in-progress: false
 
 jobs:
   release:
-    name: Semantic Release
+    name: Semantic release
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      ref: ${{ steps.release.outputs.ref }}
+      commit: ${{ steps.release.outputs.commit }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fetch latest and reset to origin/main
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin main
-          git reset --hard origin/main
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: '22'
+          cache: npm
 
-      - name: Verify CLI works
-        run: |
-          node bin/agents-init.js --help
-          echo "1" | node bin/agents-init.js --dry-run || true
+      - run: npm ci
+      - run: npm run prepare:packages
+      - run: npm test
+      - run: npm run test:packages
 
-      - name: Install semantic-release
-        run: |
-          npm install -g semantic-release @semantic-release/changelog @semantic-release/git
+      - name: Install pinned release tooling
+        run: npm install --global semantic-release@24.2.0 @semantic-release/changelog@6.0.3 @semantic-release/git@10.0.1
 
-      - name: Release
+      - name: Create synchronized release
+        id: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+        run: semantic-release
+
+  publish:
+    needs: release
+    if: needs.release.outputs.version != ''
+    uses: ./.github/workflows/publish.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+      ref: ${{ needs.release.outputs.ref }}
+      commit: ${{ needs.release.outputs.commit }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
