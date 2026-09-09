@@ -1,3 +1,25 @@
+# Unreleased
+
+### Added
+
+- Separate `@agents-config/react`, `@agents-config/angular`, and
+  `@agents-config/vue` packages backed by a shared configuration engine.
+- Stack selection through installed packages or `--stack`, with native Angular
+  and Vue scaffolding, routing, forms, state, testing, and codebase analysis.
+- Explicit unattended initialization and analysis with `--yes`.
+- Synchronized package releases with artifact-verified retries and protection
+  against downgrading newer default installations.
+
+### Fixed
+
+- Preserve nested consumer skill files unless `--force` is requested, retain
+  custom configuration and rule content, and report retained stack-switch files.
+- Generate adapter references from the selected assets with correct relative
+  paths; prevent framework-specific guidance from leaking into other presets.
+
+The existing `agents-config` package remains a compatible React entry point.
+No package is deprecated, and this change does not publish to npm.
+
 # [1.5.0](https://github.com/ericthayer/agents-config/compare/v1.4.3...v1.5.0) (2026-06-14)
 
 

@@ -1,6 +1,6 @@
 # agents-config
 
-A comprehensive knowledge base and skill library for building production-grade React applications with AI-powered tools and best practices.
+A knowledge base and shared CLI for configuring AI coding assistants in React, Angular, and Vue projects.
 
 [![npm version](https://img.shields.io/npm/v/agents-config.svg)](https://www.npmjs.com/package/agents-config)
 [![npm downloads](https://img.shields.io/npm/dm/agents-config.svg)](https://www.npmjs.com/package/agents-config)
@@ -11,7 +11,7 @@ A comprehensive knowledge base and skill library for building production-grade R
 
 ## Overview
 
-This package provides curated guidelines, instructions, skills, and rules for developing React/TypeScript applications. It serves as a **single source of truth** for AI-powered development agents and human developers to ensure consistency, accessibility, and performance across all your projects.
+Choose a framework package for curated guidelines, instructions, skills, and rules. Each preset composes its framework-specific guidance with shared standards for accessibility, performance, and development workflows. The existing `agents-config` package remains a supported React entry point; it is not deprecated.
 
 ## Why agents-config exists
 
@@ -28,9 +28,17 @@ Modern teams rarely use just one AI coding assistant. It's common to switch betw
 
 ## Installation
 
-```bash
-npm install agents-config --save-dev
-```
+Use Node.js 18 or newer. From your application directory, install **one** preset:
+
+| Stack | Install |
+|-------|---------|
+| React | `npm install -D @agents-config/react` |
+| Angular | `npm install -D @agents-config/angular` |
+| Vue 3 | `npm install -D @agents-config/vue` |
+
+Existing React projects can keep `npm install -D agents-config`. All entry points provide the same `agents-init` and `agents-analyze` commands through `@agents-config/core`; the CLI binary linked by npm does not choose your stack.
+
+Scoped-package publication requires separately configured npm organization ownership and publishing authentication. These installation commands require the corresponding release to be published; implementing the workspace does not publish it.
 
 After installation, run the interactive setup:
 
@@ -41,8 +49,20 @@ npx agents-init
 This will:
 1. Detect your project's framework, styling, and database
 2. Ask which AI agents you use (Copilot, Claude, Cursor, Gemini, etc.)
-3. Generate adapter files that reference the shared guidelines
+3. Copy selected guidance into `.agents/` and generate assistant adapter files
 4. Create a `.agents-project.json` for project-specific configuration
+
+### Stack selection and scope
+
+Both commands resolve the stack in this order: explicit `--stack react|angular|vue`, persisted `project.stack` (or a recognized legacy `project.framework`), then exactly one directly declared, installed preset in the application's `package.json`. A legacy `agents-config` dependency counts as React. Run from the consumer application directory, including in a hoisted npm workspace.
+
+Multiple declared presets without an explicit or persisted selection require an interactive choice; unattended runs fail rather than guess. A detected dependency/selected-stack mismatch requires interactive confirmation and fails unattended, even with `--yes`. The selected preset must already be installed: the CLI never downloads missing presets or application dependencies.
+
+Angular includes standalone components, signals/DI, routing, typed reactive forms, state/RxJS, testing, and scaffolding. Vue includes Vue 3 SFCs, Composition API, composables, routing, forms, local/Pinia state, testing, and scaffolding. Guidance must match the application's installed framework version.
+
+Nuxt and optional Angular/Vue UI-library, backend, application-AI, and 3D integrations are out of scope for this release. Unsupported integrations warn without adding React content. Existing React integrations remain available. Selecting **Gemini as a coding assistant** is independent of using the **Gemini application SDK** and does not enable SDK integration guidance.
+
+See the [Angular example](examples/angular/README.md), [Vue example](examples/vue/README.md), and [approved specification](SPEC.md).
 
 ### Optional: Install external skill packs
 
@@ -51,7 +71,7 @@ This project supports layering additional skill packs on top of the generated `.
 - **Agent Skills (addyosmani)** — full lifecycle workflows and review personas
 - **Vercel Agent Skills** — React and Next.js performance best practices
 
-Use the `skills` CLI:
+Install these separately with the `skills` CLI if wanted; `agents-init` does not download them. React-specific packs are not general Angular/Vue guidance.
 
 ```bash
 npx skills add addyosmani/agent-skills
@@ -65,18 +85,26 @@ npx skills add vercel-labs/agent-skills
 ```bash
 # Initialize agent configuration
 npx agents-init              # Interactive mode
+npx agents-init --yes --agents copilot,claude # Noninteractive setup
+npx agents-init --stack angular --yes        # Explicit stack selection
 npx agents-init --dry-run    # Preview without writing files
-npx agents-init --force      # Overwrite existing files
+npx agents-init --force      # Replace planned destinations only
 npx agents-init --help       # Show help
 
 # Analyze and customize (run after init)
 npx agents-analyze           # Scan codebase and generate context
+npx agents-analyze --yes     # Generate reports without confirmation
+npx agents-analyze --stack vue --report # Explicit selection for analysis
 npx agents-analyze --guided  # Interactive customization mode
 npx agents-analyze --dry-run # Preview analysis without writing
 npx agents-analyze --report  # Generate analysis report only
 npx agents-analyze --verify  # Verify existing configuration
 npx agents-analyze --verbose # Show detailed output
 ```
+
+`--agents` accepts comma-separated names: `copilot`, `claude`, `cursor`, `gemini`, `codex`, and `windsurf`. With no explicit selection, saved assistant choices are retained; a fresh unattended initialization defaults to Copilot and Claude. Use `--yes` for noninteractive initialization.
+
+`--dry-run` writes nothing, including configuration and directories. Without `--force`, existing files are preserved, including nested skill files. Switching a persisted stack requires `--force`; it replaces only files in the new plan, reports stale previous-stack files, and **does not delete them**. Review those files yourself rather than treating `--force` as a cleanup command.
 
 ## Supported AI Agents
 
@@ -121,8 +149,20 @@ npx agents-analyze --verbose # Show detailed output
 
 ## Directory Structure
 
+This repository uses **npm workspaces**:
+
+| Package | Responsibility |
+|---------|----------------|
+| `packages/core/` (`@agents-config/core`) | Shared CLI engine, framework-neutral content, adapters, and schema |
+| `packages/react/` (`@agents-config/react`) | React-family preset and staged legacy React assets |
+| `packages/angular/` (`@agents-config/angular`) | Angular-native preset and content |
+| `packages/vue/` (`@agents-config/vue`) | Vue-native preset and content |
+| Repository root (`agents-config`) | Compatible React wrappers and existing public asset paths |
+
+The root asset inventory below describes the **legacy React source**, not the content installed for every stack. Core owns genuinely framework-neutral content under `packages/core/content/`; root instructions and skills may contain React-specific assumptions and must not be copied wholesale into Angular/Vue presets.
+
 ### 📋 `AGENTS.md`
-Core guidelines for building React applications with AI-powered tools. Establishes the foundational principles and rules for development:
+The root `AGENTS.md` intentionally remains the legacy React content source. It is **not** the generated agent guidance for Angular or Vue consumers. Their `.agents/AGENTS.md` uses core and their own preset content. The React source establishes:
 - Accessibility & performance as first-class features
 - Component architecture patterns
 - TypeScript strict typing
@@ -207,15 +247,14 @@ Task-specific development workflows:
 Reference the appropriate skill or rule based on the development task:
 - Use `accessibility-audit` before marking features complete
 - Use `scaffold-component` when creating new components
-- Use `integrate-gemini` for AI feature implementation
+- Use `integrate-gemini` for React application AI integration when selected
 - Reference `web-performance` rules for optimization guidance
 - Optionally load `.agents/skills/using-agent-skills/SKILL.md` when the `addyosmani/agent-skills` pack is installed
 
 ### For Developers
-- Start with [AGENTS.md](AGENTS.md) for core principles
-- Reference relevant files in `rules/` and `instructions/` for specific guidance
-- Use `skills/` for specialized workflows and automation
-- Follow the workflows in `skills/workflows/` for common tasks
+- Start with the generated `.agents/AGENTS.md` for your selected stack
+- Reference installed `.agents/rules/`, `.agents/instructions/`, and `.agents/skills/`
+- For legacy React source guidance, see [AGENTS.md](AGENTS.md) and the root asset directories
 
 ## Integration
 
@@ -232,9 +271,10 @@ After running `npx agents-init`, a `.agents-project.json` file is created:
 ```json
 {
   "$schema": "https://raw.githubusercontent.com/ericthayer/agents-config/main/schemas/agents-project.schema.json",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "project": {
     "name": "my-app",
+    "stack": "react",
     "framework": "next",
     "styling": "tailwind",
     "database": "supabase"
@@ -250,7 +290,7 @@ After running `npx agents-init`, a `.agents-project.json` file is created:
 
 ### Customization
 
-Add project-specific overrides in the generated adapter files or in `.agents-project.json`:
+Add project-specific overrides in `.agents-project.json` or the generated adapter files (which `--force` can replace). Existing schema versions 1.0.0 and 1.1.0 remain accepted; custom names, overrides, exclusions, additional fields, and assistant choices are retained. The schema URL remains unchanged.
 
 ```json
 {
@@ -267,15 +307,28 @@ Add project-specific overrides in the generated adapter files or in `.agents-pro
 
 ## Versioning
 
-This package follows [Semantic Versioning](https://semver.org/):
+All five packages share one synchronized [Semantic Versioning](https://semver.org/) version and exact internal dependency versions:
 
 - **Major** (1.0.0 → 2.0.0): Breaking changes to rules or agent configurations
 - **Minor** (1.0.0 → 1.1.0): New rules, skills, or agent support added
 - **Patch** (1.0.0 → 1.0.1): Bug fixes, typo corrections, clarifications
 
+Releases publish core first, then the three presets, then legacy `agents-config`. Actual publication is a separate operation requiring ownership of the `@agents-config` npm organization and authorized publishing credentials.
+
 ## Contributing
 
-Contributions welcome! Please read the guidelines in [AGENTS.md](AGENTS.md) before submitting.
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [current monorepo decisions](docs/MONOREPO-PLAN.md). From the repository root:
+
+```bash
+npm install
+npm run prepare:packages
+npm test
+npm run test:packages
+```
+
+Asset preparation stages root React sources into `packages/react/content/`, including root GitHub helpers under `content/github/`. Those helpers remain React-specific: `.github/pr-template-commits.md` contains React examples. Core's `packages/core/content/github/` documents are separately authored, maintained framework-neutral sources, not staged or ignored copies.
+
+Core's schema and `github-automation` skill are still staged from root `schemas/agents-project.schema.json` and `skills/github-automation/`. Edit those canonical sources, not their ignored generated copies.
 
 ## License
 
@@ -283,4 +336,4 @@ MIT © Eric Thayer
 
 ---
 
-**Last Updated:** January 31, 2026
+**Last Updated:** September 9, 2026

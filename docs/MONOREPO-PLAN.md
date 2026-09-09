@@ -1,342 +1,144 @@
-# Monorepo Migration Plan: @agents-config Packages
+# Monorepo Decisions: Framework Packages
 
-## Overview
+**Status:** The original broad migration proposal is superseded by the approved
+[SPEC.md](../SPEC.md). This document records the replacement scope and decisions.
+The earlier proposal's pnpm/Turborepo setup, web-components package, Nuxt support,
+optional Angular integrations, independent migration steps, and legacy-package
+deprecation are not the implementation plan.
 
-Migrate from single `agents-config` package to a scoped monorepo with framework-specific packages.
+## Package Boundary
 
-## Target Package Structure
+Use npm workspaces, ESM, and Node.js >=18. Keep one shared engine so resolution,
+analysis, adapters, and file safety behave consistently across entry points.
 
-```
-@agents-config/core          # Shared rules, skills, instructions (framework-agnostic)
-@agents-config/react         # React/Next.js/Remix specific
-@agents-config/vue           # Vue.js/Nuxt specific
-@agents-config/angular       # Angular specific
-@agents-config/web-components # Vanilla/Lit/Stencil specific
-```
+| Package | Responsibility | Internal dependencies |
+|---------|----------------|-----------------------|
+| `@agents-config/core` | Shared engine, neutral guidance, adapters, schema | None |
+| `@agents-config/react` | React-family preset and existing integrations | Exact matching core version |
+| `@agents-config/angular` | Angular-native preset/content | Exact matching core version |
+| `@agents-config/vue` | Vue-native preset/content | Exact matching core version |
+| `agents-config` | Supported legacy React wrappers and public assets | Exact matching React and core versions |
 
----
+All five share one synchronized version. The root remains the publishable legacy
+package, not a private workspace-only shell. `agents-config` is retained for
+React consumers without deprecation or mandatory migration.
 
-## Phase 1: Preparation
+## Consumer Contract
 
-### 1.1 Create npm Organization
-- [ ] Go to https://www.npmjs.com/org/create
-- [ ] Create org: `agents-config`
-- [ ] This reserves the `@agents-config/*` namespace
+Install one package from the consumer application directory:
 
-### 1.2 Set Up Monorepo Structure
-```
-agents-config/
-├── packages/
-│   ├── core/
-│   │   ├── package.json        # @agents-config/core
-│   │   ├── AGENTS.md
-│   │   ├── rules/
-│   │   │   ├── accessibility.md
-│   │   │   ├── spec-driven-development.md
-│   │   │   └── web-performance.md
-│   │   ├── skills/
-│   │   │   └── accessibility-audit/
-│   │   ├── instructions/
-│   │   │   ├── development-standards.instructions.md
-│   │   │   └── web-interface-guidelines.instructions.md
-│   │   ├── prompts/
-│   │   └── schemas/
-│   │       └── agents-project.schema.json
-│   │
-│   ├── react/
-│   │   ├── package.json        # @agents-config/react
-│   │   ├── bin/
-│   │   │   └── agents-init.js
-│   │   ├── adapters/
-│   │   ├── rules/
-│   │   │   ├── component-architecture.md
-│   │   │   ├── react-19-compiler.md
-│   │   │   └── three-js-react.md
-│   │   ├── skills/
-│   │   │   ├── scaffold-component/
-│   │   │   └── integrate-gemini/
-│   │   └── instructions/
-│   │       └── storybook.instructions.md
-│   │
-│   ├── vue/
-│   │   ├── package.json        # @agents-config/vue
-│   │   ├── bin/
-│   │   ├── adapters/
-│   │   ├── rules/
-│   │   │   ├── composition-api.md
-│   │   │   ├── vue-3-patterns.md
-│   │   │   └── nuxt.md
-│   │   └── skills/
-│   │
-│   ├── angular/
-│   │   ├── package.json        # @agents-config/angular
-│   │   └── ...
-│   │
-│   └── web-components/
-│       ├── package.json        # @agents-config/web-components
-│       └── ...
-│
-├── package.json                # Root workspace config
-├── pnpm-workspace.yaml         # or npm workspaces
-├── turbo.json                  # Optional: Turborepo for builds
-├── README.md
-├── CONTRIBUTING.md
-└── LICENSE
-```
-
-### 1.3 Choose Monorepo Tooling
-**Recommended: pnpm workspaces + Turborepo**
-
-```yaml
-# pnpm-workspace.yaml
-packages:
-  - 'packages/*'
-```
-
-```json
-// Root package.json
-{
-  "name": "agents-config-monorepo",
-  "private": true,
-  "workspaces": ["packages/*"],
-  "scripts": {
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "publish-all": "pnpm -r publish --access public"
-  },
-  "devDependencies": {
-    "turbo": "^2.0.0"
-  }
-}
-```
-
----
-
-## Phase 2: Extract Core Package
-
-### 2.1 Create @agents-config/core
-
-**Framework-agnostic content:**
-- `AGENTS.md` (base version, without React-specific references)
-- Core rules:
-  - `accessibility.md`
-  - `spec-driven-development.md`
-  - `web-performance.md`
-- Core skills:
-  - `accessibility-audit/`
-- Core instructions:
-  - `development-standards.instructions.md`
-  - `web-interface-guidelines.instructions.md`
-- Prompts (generic):
-  - `create-pr.prompt.md`
-- Schema:
-  - `agents-project.schema.json` (updated for framework field)
-
-```json
-// packages/core/package.json
-{
-  "name": "@agents-config/core",
-  "version": "1.0.0",
-  "description": "Shared rules and skills for AI coding assistants",
-  "files": ["AGENTS.md", "rules/", "skills/", "instructions/", "prompts/", "schemas/"],
-  "keywords": ["ai", "agents", "copilot", "claude", "cursor", "gemini"]
-}
-```
-
-### 2.2 Update Schema for Framework Support
-
-```json
-{
-  "project": {
-    "framework": {
-      "type": "string",
-      "enum": ["next", "react", "remix", "vue", "nuxt", "angular", "lit", "stencil", "vanilla"]
-    }
-  }
-}
-```
-
----
-
-## Phase 3: Create React Package
-
-### 3.1 Create @agents-config/react
-
-```json
-// packages/react/package.json
-{
-  "name": "@agents-config/react",
-  "version": "1.0.0",
-  "description": "AI agent configuration for React applications",
-  "bin": {
-    "agents-init": "./bin/agents-init.js"
-  },
-  "dependencies": {
-    "@agents-config/core": "^1.0.0"
-  },
-  "files": ["bin/", "adapters/", "rules/", "skills/", "instructions/"],
-  "keywords": ["react", "next", "remix", "ai", "agents", "copilot", "claude"]
-}
-```
-
-### 3.2 React-Specific Content
-- Rules:
-  - `component-architecture.md`
-  - `react-19-compiler.md`
-  - `three-js-react.md`
-  - `tailwind-v4.md` (shared, but React examples)
-  - `mui.md`
-  - `supabase.md`
-  - `gemini.md`
-- Skills:
-  - `scaffold-component/`
-  - `integrate-gemini/`
-- Instructions:
-  - `storybook.instructions.md`
-  - `mui.instructions.md`
-
-### 3.3 Update CLI to Merge Core + React
-
-```javascript
-// packages/react/bin/agents-init.js
-import { coreRules, coreSkills } from '@agents-config/core';
-
-const REACT_RULES = ['component-architecture', 'react-19-compiler', ...];
-const ALL_RULES = [...coreRules, ...REACT_RULES];
-```
-
----
-
-## Phase 4: Create Vue Package
-
-### 4.1 Create @agents-config/vue
-
-```json
-// packages/vue/package.json
-{
-  "name": "@agents-config/vue",
-  "version": "1.0.0",
-  "description": "AI agent configuration for Vue.js applications",
-  "dependencies": {
-    "@agents-config/core": "^1.0.0"
-  }
-}
-```
-
-### 4.2 Vue-Specific Content to Create
-- Rules:
-  - `composition-api.md` - Composition API patterns
-  - `vue-3-patterns.md` - Vue 3 best practices
-  - `nuxt.md` - Nuxt.js specific patterns
-  - `pinia.md` - State management
-  - `vue-router.md` - Routing patterns
-- Skills:
-  - `scaffold-vue-component/`
-  - `vue-composable/`
-- Instructions:
-  - `vue-testing.instructions.md`
-
----
-
-## Phase 5: Create Angular Package
-
-### 5.1 Create @agents-config/angular
-
-- Rules:
-  - `angular-signals.md` - Signals pattern (Angular 16+)
-  - `angular-standalone.md` - Standalone components
-  - `ngrx.md` - State management
-  - `angular-forms.md` - Reactive forms patterns
-  - `angular-material.md` - Material components
-- Skills:
-  - `scaffold-angular-component/`
-  - `angular-service/`
-
----
-
-## Phase 6: Create Web Components Package
-
-### 6.1 Create @agents-config/web-components
-
-- Rules:
-  - `custom-elements.md` - Native custom elements
-  - `lit.md` - Lit framework patterns
-  - `stencil.md` - Stencil compiler patterns
-  - `shadow-dom.md` - Shadow DOM best practices
-- Skills:
-  - `scaffold-web-component/`
-
----
-
-## Phase 7: Migration & Publishing
-
-### 7.1 Deprecate Old Package
 ```bash
-npm deprecate agents-config@"<2.0.0" "This package has moved to @agents-config/react. See https://github.com/ericthayer/agents-config for migration guide."
-```
-
-### 7.2 Publish New Packages
-```bash
-# First publish
-cd packages/core && pnpm publish --access public
-cd packages/react && pnpm publish --access public
-cd packages/vue && pnpm publish --access public
-# etc.
-```
-
-### 7.3 Update Documentation
-- Update README with new install commands
-- Create migration guide
-- Update all URLs
-
----
-
-## Migration Guide for Users
-
-### From agents-config to @agents-config/react
-
-**Before:**
-```bash
-npm install agents-config --save-dev
+npm install -D @agents-config/react
+# Or: npm install -D @agents-config/angular
+# Or: npm install -D @agents-config/vue
 npx agents-init
+npx agents-analyze
 ```
 
-**After:**
+Existing `npm install -D agents-config` usage remains supported. Both CLI names
+stay unchanged. All wrappers delegate to core, and the linked binary does not
+select a stack.
+
+Resolve from explicit `--stack react|angular|vue`, then persisted `project.stack`
+or recognized legacy framework, then one directly declared installed preset.
+Legacy counts as React. Hoisted workspaces still resolve from the application
+directory. Multiple presets without explicit/persisted selection require an
+interactive choice; unattended ambiguity fails. Dependency/stack mismatches
+require interactive confirmation and fail unattended.
+
+Use `agents-init --yes` for noninteractive setup and
+`--agents copilot,claude` to select assistants by name. Retain saved selections;
+fresh unattended defaults are Copilot and Claude. Presets must already be
+installed. Neither command implicitly downloads dependencies or skill packs.
+
+## Content Scope
+
+Angular includes standalone components, signals/DI, routing, typed reactive forms,
+state/RxJS, testing, and scaffolding. Vue includes Vue 3 SFCs, Composition API,
+composables, routing, forms, local/Pinia state, testing, and scaffolding. Native
+framework workflows are in scope; guidance respects installed framework versions.
+
+Nuxt, a web-components package, and optional Angular/Vue UI-library, backend,
+application-AI, and 3D integrations are deferred. Unsupported integrations warn
+without importing React guidance. Existing React integrations remain supported.
+Choosing Gemini as a coding assistant does not select Gemini application SDK
+integration.
+
+Core owns genuinely neutral guidance. Root `AGENTS.md` remains intentionally
+**legacy React source**, not consumer Angular/Vue generated agent guidance.
+Root instructions and skills cannot be assumed framework-neutral merely because
+their titles sound generic.
+
+## Source and Distribution
+
+Keep one canonical source for each asset. The shared root command
+`npm run prepare:packages` prepares distribution assets:
+
+| Canonical source | Staged destination |
+|------------------|--------------------|
+| Root `AGENTS.md`, `rules/`, `skills/`, `instructions/` | `packages/react/content/` |
+| Root GitHub helper documents | `packages/react/content/github/` |
+| Root `schemas/agents-project.schema.json` | `packages/core/content/schemas/` |
+| Root `skills/github-automation/` | `packages/core/content/skills/github-automation/` |
+| Root `LICENSE` | Each workspace package's `LICENSE` |
+
+These generated copies are ignored; edit sources rather than copies. Root
+`.github/pr-template-commits.md` contains React examples, so root GitHub helpers
+are staged only into React content for compatibility, not into core.
+
+Core's `packages/core/content/github/` documents are separately authored,
+maintained framework-neutral sources, not staged or ignored files. Core's schema
+and `github-automation` skill remain staged from their root sources. Other neutral
+content is authored under `packages/core/content/`; Angular and Vue own their
+native content. Tarballs must work without reaching back into the repository.
+
+Schema changes for core belong in the root canonical schema. Keep the schema
+URL stable, accept versions 1.0.0/1.1.0, and use version 1.2.0 for the optional
+stack field and Angular support. Preserve names, overrides, exclusions,
+additional fields, and assistant choices.
+
+## Safety and Acceptance
+
+Plan all files and validate assets before writing. Reject content collisions and
+symlinked output destinations/ancestors. `--dry-run` writes nothing. Without
+`--force`, preserve every existing file, including nested skill files.
+
+A persisted stack switch requires `--force`. Force replaces only planned
+destinations; stale previous-stack files are reported, never deleted. Generated
+guidance and adapters must reference actual selected assets with correct relative
+links; optional future paths must be labeled optional.
+
+Run from the root:
+
 ```bash
-npm install @agents-config/react --save-dev
-npx agents-init
+npm run prepare:packages
+npm test
+npm run test:packages
 ```
 
-That's it! The CLI works the same way.
+Coverage includes resolution, compatibility, composition, adapters, file safety,
+and native analysis. Local tarball tests cover presets and legacy, multiple
+presets, hoisting, preserved public paths, and absence of unrelated framework
+content. CI validates the checkout, not the current registry release. Release
+tests mock registry operations.
 
----
+## Release Boundary
 
-## Timeline Estimate
+One synchronized semantic-release process advances all five versions, exact
+internal dependencies, and the npm v3 lockfile. `release.yml` uses pinned global
+release tooling rather than root development dependencies and explicitly calls
+reusable `publish.yml`; there are no release/tag event publishing triggers.
 
-| Phase | Task | Time |
-|-------|------|------|
-| 1 | Preparation & setup | 2-3 hours |
-| 2 | Extract core package | 2-3 hours |
-| 3 | Migrate React package | 2-3 hours |
-| 4 | Create Vue package | 4-6 hours |
-| 5 | Create Angular package | 4-6 hours |
-| 6 | Create Web Components package | 3-4 hours |
-| 7 | Migration & publishing | 1-2 hours |
-| **Total** | | **18-27 hours** |
+Publishing checks out and validates the exact release tag, runs asset preparation
+and both test suites, and preflights all artifacts and registry identities.
+Invocations are serialized and publish **core, React, Angular, Vue, then legacy**.
+Already-published versions are skipped only on matching SHA-512 integrity, with
+SHA-1 fallback only when integrity is absent. Only `E404` means absent; other
+registry or authentication errors fail.
 
----
-
-## Open Questions
-
-1. **Shared styling rules?** Should `tailwind-v4.md` and `mui.md` be in core or framework-specific?
-2. **Database rules?** Supabase/Firebase are framework-agnostic - move to core?
-3. **CLI per package or shared?** Each package has its own CLI, or one CLI that installs correct package?
-4. **Versioning strategy?** Sync versions across packages or independent?
-
----
-
-## Notes
-
-- Keep the GitHub repo as `agents-config` (not renamed)
-- Vue/Angular packages can be created incrementally
-- Start with core + react, validate the pattern, then expand
+Publication is separate from implementation. Before a real release, establish
+ownership of the `@agents-config` npm organization and authorized publishing
+access for all five packages through `NPM_TOKEN`. Manual retry requires a version
+and its exact `refs/tags/v<version>` ref, optionally a full commit SHA; see
+[retrying publication](../CONTRIBUTING.md#retrying-publication). Local asset
+preparation, packing, and tests do not publish anything.
