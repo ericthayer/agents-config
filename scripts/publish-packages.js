@@ -7,11 +7,16 @@ import { readRelease, runCommand, validateReleaseRef, validateVersion } from './
 
 const registry = 'https://registry.npmjs.org';
 const hash = (algorithm, bytes, encoding) => createHash(algorithm).update(bytes).digest(encoding);
+const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+function hasExactRegistrySpec(spec, text) {
+  return new RegExp(`(?:['"\`])${escapeRegExp(spec)}(?:['"\`])|(?:^|\\s)${escapeRegExp(spec)}(?=\\s|$)`).test(text);
+}
 
 function isRegistryMissingPackageText(spec, text) {
   return typeof text === 'string' &&
     /\bE404\b/.test(text) &&
-    text.includes(spec) &&
+    hasExactRegistrySpec(spec, text) &&
     /is not in this registry/i.test(text);
 }
 

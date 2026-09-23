@@ -118,6 +118,9 @@ test('registry only treats explicit E404 as absence', async () => {
     Object.assign(new Error('wrong package'), {
       stderr: JSON.stringify({ error: { code: 'E404', detail: `npm ERR! code E404\nnpm ERR! 404 'other-package@${artifact.version}' is not in this registry.` } }),
     }),
+    Object.assign(new Error('near match'), {
+      stderr: `npm ERR! code E404\nnpm ERR! 404 '${artifact.name}@${artifact.version}-beta' is not in this registry.`,
+    }),
     Object.assign(new Error('wrong package'), { stderr: `npm ERR! code E404\nnpm ERR! 404 'other-package@${artifact.version}' is not in this registry.` }),
     Object.assign(new Error('wrong package'), { stderr: 'npm ERR! code E404\nnpm ERR! request failed, try again later' }),
     Object.assign(new Error('timeout'), { stdout: 'not json' })]) {
