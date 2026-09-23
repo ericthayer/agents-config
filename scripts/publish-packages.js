@@ -8,18 +8,24 @@ import { readRelease, runCommand, validateReleaseRef, validateVersion } from './
 const registry = 'https://registry.npmjs.org';
 const hash = (algorithm, bytes, encoding) => createHash(algorithm).update(bytes).digest(encoding);
 
+function isRegistryMissingPackage(error) {
+  for (const stream of [error.stdout, error.stderr]) {
+    if (typeof stream !== 'string' || stream === '') continue;
+    try {
+      if (JSON.parse(stream)?.error?.code === 'E404') return true;
+    } catch {
+      if (/\bE404\b/.test(stream)) return true;
+    }
+  }
+  return false;
+}
+
 async function registryValue(spec, field, run) {
   let output;
   try {
     output = await run('npm', ['view', spec, field, '--json', '--registry', registry]);
   } catch (error) {
-    let details;
-    try {
-      details = JSON.parse(error.stdout ?? '');
-    } catch {
-      throw error;
-    }
-    if (details?.error?.code === 'E404') return { found: false };
+    if (isRegistryMissingPackage(error)) return { found: false };
     throw error;
   }
   return { found: true, value: JSON.parse(output) };

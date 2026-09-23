@@ -99,6 +99,12 @@ function npmError(code) {
 test('registry only treats explicit E404 as absence', async () => {
   const artifact = { name: '@agents-config/core', version: '1.6.0', integrity: digest('core'), shasum: 'hash' };
   assert.equal(await registryStatus(artifact, async () => { throw npmError('E404'); }), 'absent');
+  assert.equal(await registryStatus(artifact, async () => {
+    throw Object.assign(new Error('npm E404'), { stderr: JSON.stringify({ error: { code: 'E404' } }) });
+  }), 'absent');
+  assert.equal(await registryStatus(artifact, async () => {
+    throw Object.assign(new Error('npm E404'), { stderr: 'npm ERR! code E404\nnpm ERR! 404 Not Found' });
+  }), 'absent');
   assert.equal(await registryStatus(artifact, async () => JSON.stringify({ integrity: artifact.integrity })), 'identical');
   for (const error of [npmError('E401'), npmError('E403'), npmError('E500'), npmError('ENOTFOUND'),
     Object.assign(new Error('timeout'), { stdout: 'not json' })]) {
