@@ -11,7 +11,7 @@ const hash = (algorithm, bytes, encoding) => createHash(algorithm).update(bytes)
 function isRegistryMissingPackageText(spec, text) {
   return typeof text === 'string' &&
     /\bE404\b/.test(text) &&
-    text.includes(`'${spec}'`) &&
+    text.includes(spec) &&
     /is not in this registry/i.test(text);
 }
 
