@@ -14,7 +14,10 @@ function isRegistryMissingPackage(error) {
     try {
       if (JSON.parse(stream)?.error?.code === 'E404') return true;
     } catch {
-      if (/\bE404\b/.test(stream)) return true;
+      if (/\bE404\b/.test(stream) &&
+          (/\b404\b[\s\S]*\bNot Found\b/i.test(stream) || /is not in this registry/i.test(stream))) {
+        return true;
+      }
     }
   }
   return false;

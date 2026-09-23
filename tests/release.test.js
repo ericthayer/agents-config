@@ -107,6 +107,7 @@ test('registry only treats explicit E404 as absence', async () => {
   }), 'absent');
   assert.equal(await registryStatus(artifact, async () => JSON.stringify({ integrity: artifact.integrity })), 'identical');
   for (const error of [npmError('E401'), npmError('E403'), npmError('E500'), npmError('ENOTFOUND'),
+    Object.assign(new Error('wrong package'), { stderr: 'npm ERR! code E404\nnpm ERR! request failed, try again later' }),
     Object.assign(new Error('timeout'), { stdout: 'not json' })]) {
     await assert.rejects(registryStatus(artifact, async () => { throw error; }));
   }
