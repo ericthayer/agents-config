@@ -92,21 +92,32 @@ test('CLI accepts workflow arguments and rejects missing, unknown or duplicate a
   }
 });
 
-function npmError(code) {
-  return Object.assign(new Error(`npm ${code}`), { stdout: JSON.stringify({ error: { code } }) });
+function npmError(code, spec) {
+  const error = { code };
+  if (spec !== undefined) {
+    error.detail = `npm ERR! code ${code}\nnpm ERR! 404 '${spec}' is not in this registry.`;
+  }
+  return Object.assign(new Error(`npm ${code}`), { stdout: JSON.stringify({ error }) });
 }
 
 test('registry only treats explicit E404 as absence', async () => {
   const artifact = { name: '@agents-config/core', version: '1.6.0', integrity: digest('core'), shasum: 'hash' };
-  assert.equal(await registryStatus(artifact, async () => { throw npmError('E404'); }), 'absent');
   assert.equal(await registryStatus(artifact, async () => {
-    throw Object.assign(new Error('npm E404'), { stderr: JSON.stringify({ error: { code: 'E404' } }) });
+    throw npmError('E404', `${artifact.name}@${artifact.version}`);
+  }), 'absent');
+  assert.equal(await registryStatus(artifact, async () => {
+    throw Object.assign(new Error('npm E404'), {
+      stderr: JSON.stringify({ error: { code: 'E404', detail: `npm ERR! code E404\nnpm ERR! 404 '${artifact.name}@${artifact.version}' is not in this registry.` } }),
+    });
   }), 'absent');
   assert.equal(await registryStatus(artifact, async () => {
     throw Object.assign(new Error('npm E404'), { stderr: `npm ERR! code E404\nnpm ERR! 404 '${artifact.name}@${artifact.version}' is not in this registry.` });
   }), 'absent');
   assert.equal(await registryStatus(artifact, async () => JSON.stringify({ integrity: artifact.integrity })), 'identical');
   for (const error of [npmError('E401'), npmError('E403'), npmError('E500'), npmError('ENOTFOUND'),
+    Object.assign(new Error('wrong package'), {
+      stderr: JSON.stringify({ error: { code: 'E404', detail: `npm ERR! code E404\nnpm ERR! 404 'other-package@${artifact.version}' is not in this registry.` } }),
+    }),
     Object.assign(new Error('wrong package'), { stderr: `npm ERR! code E404\nnpm ERR! 404 'other-package@${artifact.version}' is not in this registry.` }),
     Object.assign(new Error('wrong package'), { stderr: 'npm ERR! code E404\nnpm ERR! request failed, try again later' }),
     Object.assign(new Error('timeout'), { stdout: 'not json' })]) {
@@ -141,10 +152,10 @@ async function publishFixture(t) {
     if (args[0] === 'view') {
       calls.push(`view:${args[1]}`);
       if (args[2] === 'dist-tags.latest') {
-        if (!latest.has(args[1])) throw npmError('E404');
+        if (!latest.has(args[1])) throw npmError('E404', args[1]);
         return JSON.stringify(latest.get(args[1]));
       }
-      if (!published.has(args[1])) throw npmError('E404');
+      if (!published.has(args[1])) throw npmError('E404', args[1]);
       return JSON.stringify(published.get(args[1]));
     }
     assert.equal(args[0], 'publish');
@@ -197,7 +208,7 @@ test('retrying an older partial release never downgrades latest tags', async t =
 
 test('latest preflight accepts absent/equal/older tags but rejects outages and malformed tags', async () => {
   const artifact = { name: '@agents-config/core', version: '1.10.0' };
-  await assertNotSuperseded(artifact, async () => { throw npmError('E404'); });
+  await assertNotSuperseded(artifact, async () => { throw npmError('E404', artifact.name); });
   for (const latest of ['1.9.0', '1.10.0', '0.99.0']) {
     await assertNotSuperseded(artifact, async () => JSON.stringify(latest));
   }
@@ -258,7 +269,7 @@ test('real npm tarballs retain reproducible identity across a mocked publish ret
   const run = async (command, args, options) => {
     if (args[0] === 'pack') return runCommand(command, args, options);
     if (args[0] === 'view') {
-      if (!registry.has(args[1])) throw npmError('E404');
+      if (!registry.has(args[1])) throw npmError('E404', args[1]);
       return JSON.stringify(registry.get(args[1]));
     }
     assert.equal(args[0], 'publish');
