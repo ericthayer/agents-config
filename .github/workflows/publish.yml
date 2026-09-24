@@ -58,6 +58,9 @@ jobs:
           cache: npm
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Use current publish tooling
+        run: git checkout --force "$GITHUB_SHA" -- scripts/publish-packages.js
+
       - name: Validate tag and checkout before installing
         run: node scripts/publish-packages.js --check-ref --version "$RELEASE_VERSION" --ref "$RELEASE_REF" --commit "$RELEASE_COMMIT"
 
