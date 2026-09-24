@@ -10,7 +10,10 @@ const hash = (algorithm, bytes, encoding) => createHash(algorithm).update(bytes)
 const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 function hasExactRegistrySpec(spec, text) {
-  return new RegExp(`(?:['"\`])${escapeRegExp(spec)}(?:['"\`])|(?:^|\\s)${escapeRegExp(spec)}(?=\\s|$)`).test(text);
+  const exact = escapeRegExp(spec);
+  const unversioned = spec.startsWith('@') ? spec.indexOf('@', 1) === -1 : !spec.includes('@');
+  const wildcard = unversioned ? `(?:@\\*)?` : '';
+  return new RegExp(`(?:['"\`])${exact}${wildcard}(?:['"\`])|(?:^|\\s)${exact}${wildcard}(?=\\s|$)`).test(text);
 }
 
 function isRegistryMissingPackageText(spec, text) {
