@@ -1,245 +1,202 @@
 # Contributing to agents-config
 
-Thank you for your interest in contributing to agents-config! This document provides guidelines and instructions for contributing.
-
-## Welcome
-
-agents-config is a community-driven project that helps developers maintain consistent, accessible, and performant code across their React applications. We welcome contributions of all kinds, including:
-
-- New rules for coding standards
-- New skills for specialized workflows
-- New instructions for development processes
-- Bug fixes and improvements
-- Documentation updates
-- Example projects
+Contributions should keep React, Angular, and Vue guidance accurate for each
+framework while sharing only genuinely framework-neutral content. Read
+[SPEC.md](SPEC.md) for the approved contract and
+[docs/MONOREPO-PLAN.md](docs/MONOREPO-PLAN.md) for package boundaries.
 
 ## Getting Started
 
-### Prerequisites
+Use Node.js >=18, npm with workspace support, and Git. Fork and clone the
+repository, create a focused branch, then run from the repository root:
 
-- Node.js >= 18.0.0
-- npm or yarn
-- Git
-
-### Setup
-
-1. **Fork the repository**
-   ```bash
-   # Click "Fork" on GitHub, then clone your fork
-   git clone https://github.com/YOUR_USERNAME/agents-config.git
-   cd agents-config
-   ```
-
-2. **Create a branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Test the CLI**
-   ```bash
-   node bin/agents-init.js --help
-   node bin/agents-init.js --dry-run
-   ```
-
-## Project Structure
-
-```
-agents-config/
-├── adapters/           # Agent adapter templates
-│   ├── copilot.template.md
-│   ├── claude.template.md
-│   ├── cursor.template.md
-│   ├── gemini.template.md
-│   ├── codex.template.md
-│   └── windsurf.template.md
-├── bin/                # CLI scripts
-│   ├── agents-init.js  # Main CLI tool
-│   └── postinstall.js  # Post-install message
-├── instructions/       # Process guidelines
-├── rules/             # Coding standards
-├── schemas/           # JSON schemas
-├── skills/            # Specialized workflows and automation
-│   ├── accessibility-audit/
-│   ├── scaffold-component/
-│   ├── integrate-gemini/
-│   ├── github-automation/
-│   └── workflows/
-└── examples/          # Example projects
+```bash
+npm install
+npm run prepare:packages
+npm test
+npm run test:packages
 ```
 
-## How to Contribute
+`npm run prepare:packages` is the shared asset-preparation command used for
+packing. `npm test` exercises the shared engine and content contracts;
+`npm run test:packages` exercises installed local tarballs rather than a
+previously published registry version. No registry publication is needed for
+local validation.
 
-### Adding a New Rule
+## Package Structure and Source Ownership
 
-Rules define coding standards for specific technologies or patterns.
+This is an ESM npm-workspaces repository, not a pnpm/Turborepo project.
 
-1. Create a new file in `rules/` with kebab-case naming:
-   ```bash
-   touch rules/your-rule-name.md
-   ```
+| Location | Editable source and responsibility |
+|----------|------------------------------------|
+| `packages/core/src/` | Shared initialization, analysis, resolution, and generation engine |
+| `packages/core/content/` | Neutral guidance, adapter template, and neutral GitHub templates, except staged assets below |
+| `packages/react/preset.js` | React content selection and optional integrations |
+| Root `AGENTS.md`, `rules/`, `skills/`, `instructions/` | Legacy React assets, staged into `packages/react/content/` |
+| Root `.github/` helper documents | Legacy React GitHub helpers, staged into React content |
+| `packages/angular/`, `packages/vue/` | Framework-native preset descriptors and content |
+| Root `schemas/agents-project.schema.json` | Canonical shared schema, staged into core |
+| Root `skills/github-automation/` | Shared automation skill source, staged into core as well as React |
+| `bin/` and preset `bin/` directories | Thin wrappers retaining `agents-init` and `agents-analyze` |
+| `scripts/`, `tests/` | Asset preparation, package smoke tests, and behavioral coverage |
+| `examples/` | Consumer usage examples |
 
-2. Follow this structure:
-   ```markdown
-   # Rule Name
+Root `AGENTS.md` intentionally remains the **legacy React source**. Do not
+rewrite it as generic guidance or treat it as the generated guidance for Angular
+or Vue consumers. Framework-neutral content has its own source in core; a root
+instruction that contains React examples is not automatically reusable there.
 
-   **Purpose**: Brief description of what this rule covers.
+Do not edit or commit ignored generated assets: `packages/react/content/`
+(including its `github/` helpers), package `LICENSE` copies, core
+`content/schemas/`, or core `content/skills/github-automation/`. Edit their
+canonical sources and rerun `npm run prepare:packages`.
 
-   ---
+Root `.github/pr-template-commits.md` contains React examples, so root GitHub
+helpers are staged into `packages/react/content/github/` for React compatibility.
+Core's `packages/core/content/github/` documents are separately authored,
+maintained framework-neutral sources: edit and commit them directly. They are
+neither staged from root helpers nor ignored. Core's schema and
+`github-automation` skill remain staged as described above.
 
-   ## Overview
+## Adding Rules, Skills, and Instructions
 
-   Explain when and why to use this rule.
+Choose the owner before adding content: core for neutral workflows, the root
+source directories for legacy React assets, or the Angular/Vue package content
+directory for framework-native guidance.
 
-   ## Guidelines
+Use `rules/<topic>.md`, `skills/<skill-name>/SKILL.md`, and
+`instructions/<topic>.instructions.md`. Match existing formats, use kebab-case
+names, and include purpose, applicable framework/version, actionable guidance,
+examples, and official documentation links where version-sensitive.
 
-   ### Section 1
-   - Guideline details
-   - Code examples
+Register selected assets in the preset descriptor or core composition logic,
+not by adding framework-specific branches to CLI wrappers. Required assets must
+exist, and composition must reject conflicting destination paths. Update
+scaffolding and example links with any renamed or added content.
 
-   ## Anti-Patterns
+Angular scope includes standalone components, signals/DI, routing, typed reactive
+forms, state/RxJS, testing, and scaffolding. Vue scope includes Vue 3 SFCs,
+Composition API, composables, routing, forms, local/Pinia state, testing, and
+scaffolding. Respect the consumer's installed framework version.
 
-   ### ❌ Bad Pattern
-   ```code example```
+Nuxt and optional Angular/Vue UI-library, backend, application-AI, and 3D
+integrations are deferred. Do not add React integration content as a fallback.
+Existing React integrations stay supported. The Gemini assistant adapter is
+separate from Gemini application SDK guidance.
 
-   ### ✅ Good Pattern
-   ```code example```
+## Changing the CLI or Schema
 
-   ## Related Resources
-   - Links to documentation
-   ```
+Both commands must use the shared resolver. Selection order is explicit
+`--stack`, persisted stack/recognized legacy framework, then one directly
+declared installed preset. Legacy `agents-config` counts as React. Do not infer
+the stack from whichever package's binary npm linked.
 
-3. Update `bin/agents-init.js` to include detection logic if the rule should be auto-selected.
+Unattended ambiguity fails without explicit or persisted selection; interactive
+runs can ask. Dependency/stack mismatches require interactive confirmation and
+fail unattended. Initialization uses `--yes` for unattended execution and
+`--agents copilot,claude` for explicit assistant selection. Preserve saved
+assistant choices; fresh unattended defaults are Copilot and Claude.
+Use `agents-analyze --yes` to explicitly authorize unattended report/context
+generation. It must still reject ambiguous selection, stack mismatches, and
+unsafe output destinations; guided customization remains interactive.
 
-### Adding a New Skill
+Plan and validate before writing. Dry runs must write nothing. Non-force runs
+preserve existing files, including nested skill files. A persisted stack switch
+requires `--force`, which replaces only planned destinations and reports stale
+files without deleting them. Reject symlinked output paths/ancestors. Never
+download missing presets, application dependencies, or external skill packs
+automatically.
 
-Skills are specialized workflows for complex tasks.
+For schema changes, edit **root**
+`schemas/agents-project.schema.json`, then prepare packages. Preserve the
+existing schema URL and compatibility with configurations at versions 1.0.0
+and 1.1.0. Version 1.2.0 adds optional `project.stack` and Angular support;
+retain custom names, overrides, exclusions, additional fields, and assistant
+choices.
 
-1. Create a new folder in `skills/`:
-   ```bash
-   mkdir -p skills/your-skill-name
-   touch skills/your-skill-name/SKILL.md
-   ```
+For a new assistant, update the shared assistant registry and adapter
+generation, provide the appropriate output path, and cover generated relative
+links. Do not introduce separate preset-specific CLI engines.
 
-2. Follow this structure in `SKILL.md`:
-   ```markdown
-   # Skill Name
+## Pull Requests
 
-   **Purpose**: What this skill helps accomplish.
+Keep changes focused, update directly affected documentation, and describe the
+behavior, motivation, and validation in the PR. Use Node's existing test runner
+and package smoke harness; avoid adding a second tooling stack.
 
-   ## When to Use
+Cover changed behavior with targeted tests, including errors and preservation
+where relevant. Packaging changes must also pass `npm run test:packages`, with
+assets available from installed tarballs without access to the repository.
+Review for unrelated framework content, broken generated links, and unintended
+writes before submitting.
 
-   - Trigger conditions
-   - Use cases
+Use ES modules, existing naming conventions, and clear documentation. Follow
+conventional commits, for example:
 
-   ## Workflow
-
-   ### Step 1: First Step
-   Description and actions.
-
-   ### Step 2: Second Step
-   Description and actions.
-
-   ## Checklist
-
-   - [ ] Item 1
-   - [ ] Item 2
-
-   ## Examples
-
-   Code examples and templates.
-   ```
-
-3. Update `bin/agents-init.js` to include the skill in `determineSkills()`.
-
-### Adding a New Instruction
-
-Instructions are process guidelines for development workflows.
-
-1. Create a new file in `instructions/`:
-   ```bash
-   touch instructions/your-instruction.instructions.md
-   ```
-
-2. Follow similar structure to existing instructions.
-
-3. Update `bin/agents-init.js` to include detection logic in `determineInstructions()`.
-
-### Adding Agent Adapter Support
-
-To add support for a new AI coding assistant:
-
-1. Create a template in `adapters/`:
-   ```bash
-   touch adapters/new-agent.template.md
-   ```
-
-2. Include these placeholders:
-   - `{{PROJECT_NAME}}` - Project name
-   - `{{FRAMEWORK}}` - Detected framework
-   - `{{STYLING}}` - Styling approach
-   - `{{DATABASE}}` - Database/backend
-   - `{{RULES_LIST}}` - List of included rules
-
-3. Update `bin/agents-init.js`:
-   - Add to `AGENTS` object
-   - Add detection logic if needed
-
-## Pull Request Process
-
-1. **Ensure your code works**
-   ```bash
-   node bin/agents-init.js --dry-run
-   ```
-
-2. **Update documentation** if you've added new features
-
-3. **Write a clear PR description**:
-   - What does this PR do?
-   - Why is this change needed?
-   - How was it tested?
-
-4. **Keep PRs focused** - One feature or fix per PR
-
-5. **Follow existing patterns** - Match the style of existing code and documentation
-
-## Code Style
-
-- Use ES modules (`import`/`export`)
-- Use kebab-case for file names
-- Use PascalCase for component names in examples
-- Include helpful comments
-- Write clear, actionable documentation
-
-## Commit Messages
-
-Follow conventional commits:
-
-```
-feat: add new tailwind-v4 rule
-fix: correct detection logic for MUI
-docs: update README with new examples
-chore: update dependencies
+```text
+feat: add Angular routing guidance
+fix: preserve nested skill files during initialization
+docs: clarify stack selection
 ```
 
-## Reporting Issues
+## Releases
 
-When reporting bugs, please include:
+All five packages advance together through a single synchronized semantic-release
+process. Each preset depends on the exact matching core version; legacy
+`agents-config` depends on exact matching React and core versions. Do not use
+caret ranges or independently version packages.
 
-1. Node.js version (`node --version`)
-2. npm version (`npm --version`)
-3. Operating system
-4. Steps to reproduce
-5. Expected vs actual behavior
+`.github/workflows/release.yml` runs semantic-release using pinned global tooling,
+without adding root development dependencies. Its local plugin updates all five
+manifests, exact internal dependencies, and the npm v3 lockfile. An explicit job
+calls the reusable `.github/workflows/publish.yml`; publishing does not depend on
+release or tag events.
 
-## Questions?
+Publish in dependency order: `@agents-config/core`, then
+`@agents-config/react`, `@agents-config/angular`, and `@agents-config/vue`, then
+`agents-config`. The publishing workflow serializes invocations and verifies
+artifact identity before accepting an already-published version on retry.
+Before publishing missing artifacts, it rejects retries superseded by a newer
+`latest` version in any package; historical retries cannot downgrade default installs.
+Registry and authentication errors must fail visibly.
 
-- Open a [GitHub Issue](https://github.com/ericthayer/agents-config/issues)
-- Check existing issues for similar questions
+Implementation, local packing, and tests do **not** publish packages. Actual
+publication separately requires ownership of the `@agents-config` npm
+organization and publishing authorization for every package, including legacy
+`agents-config`. Keep the legacy React package supported; do not deprecate it.
 
-## Code of Conduct
+### Retrying Publication
 
-Be respectful and inclusive. We're all here to learn and improve.
+For an existing release, manually run **Publish to npm** (`publish.yml`) from
+GitHub Actions with these inputs:
 
----
+| Input | Value |
+|-------|-------|
+| `version` | Released version without `v`, for example `1.6.0` |
+| `ref` | Exact matching tag ref, for example `refs/tags/v1.6.0` |
+| `commit` | Optional full release commit SHA to verify against the tag |
 
-Thank you for contributing! 🎉
+Use the original release tag, not a branch or newly edited checkout. This is a
+real publishing operation: configure the repository's `NPM_TOKEN` secret with
+public publishing permissions for both legacy `agents-config` and the
+`@agents-config` scope, with scope ownership established beforehand.
+
+The workflow checks out that exact tag and validates HEAD and version before
+installing. It runs `prepare:packages`, `npm test`, and `test:packages`, then
+preflights all local artifacts and registry identities before publishing in the
+order above. Invocations are serialized.
+
+An existing version is skipped only when its registry SHA-512 integrity matches
+the local artifact; SHA-1 is a fallback only when integrity is absent. Only
+`E404` means a version is absent. Identity mismatches, authentication failures,
+and other registry errors stop publication; do not bypass them or overwrite a
+release tag to force a retry.
+
+## Reporting Issues and Conduct
+
+Include Node/npm versions, operating system, installed preset packages, command
+and flags, reproduction steps, and expected versus actual behavior in
+[GitHub issues](https://github.com/ericthayer/agents-config/issues). Do not include
+credentials or private application content.
+
+Be respectful and inclusive, and check existing issues before opening a duplicate.

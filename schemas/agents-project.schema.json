@@ -24,8 +24,13 @@
         },
         "framework": {
           "type": "string",
-          "enum": ["next", "react", "remix", "astro", "vue", "svelte", "other"],
+          "enum": ["next", "react", "remix", "astro", "vue", "angular", "svelte", "other"],
           "description": "Primary framework"
+        },
+        "stack": {
+          "type": "string",
+          "enum": ["react", "angular", "vue"],
+          "description": "Selected installed framework preset; optional for legacy configurations"
         },
         "styling": {
           "type": "string",

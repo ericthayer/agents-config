@@ -1,0 +1,14 @@
+{
+  "name": "@agents-config/vue",
+  "version": "1.5.0",
+  "description": "Vue configuration and skills for AI coding assistants",
+  "type": "module",
+  "license": "MIT",
+  "repository": {"type": "git", "url": "git+https://github.com/ericthayer/agents-config.git", "directory": "packages/vue"},
+  "exports": {"./preset": "./preset.js", "./package.json": "./package.json"},
+  "bin": {"agents-init": "bin/agents-init.js", "agents-analyze": "bin/agents-analyze.js"},
+  "dependencies": {"@agents-config/core": "1.5.0"},
+  "files": ["bin/", "preset.js", "AGENTS.md", "rules/", "skills/", "instructions/", "README.md", "LICENSE"],
+  "engines": {"node": ">=18.0.0"},
+  "publishConfig": {"access": "public"}
+}

@@ -1,7 +1,7 @@
 {
   "name": "agents-config",
   "version": "1.5.0",
-  "description": "A comprehensive knowledge base and skill library for building production-grade React applications with AI-powered tools and best practices.",
+  "description": "Compatible React entry point for shared AI agent configuration, with Angular and Vue packages available.",
   "author": "Eric Thayer",
   "license": "MIT",
   "repository": {
@@ -28,6 +28,11 @@
     "agentic-workflows"
   ],
   "type": "module",
+  "workspaces": ["packages/*"],
+  "dependencies": {
+    "@agents-config/core": "1.5.0",
+    "@agents-config/react": "1.5.0"
+  },
   "bin": {
     "agents-init": "bin/agents-init.js",
     "agents-analyze": "bin/agents-analyze.js"
@@ -48,8 +53,12 @@
   ],
   "scripts": {
     "postinstall": "node ./bin/postinstall.js",
-    "test": "node ./bin/agents-init.js --dry-run",
-    "prepare": "echo 'Ready to publish'"
+    "pretest": "node scripts/prepare-packages.js",
+    "test": "node --test tests/*.test.js",
+    "test:packages": "node scripts/test-packages.js",
+    "prepare:packages": "node scripts/prepare-packages.js",
+    "prepare": "node scripts/prepare-packages.js",
+    "prepack": "node scripts/prepare-packages.js"
   },
   "engines": {
     "node": ">=18.0.0"
