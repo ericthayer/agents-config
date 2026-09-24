@@ -212,6 +212,12 @@ test('retrying an older partial release never downgrades latest tags', async t =
 test('latest preflight accepts absent/equal/older tags but rejects outages and malformed tags', async () => {
   const artifact = { name: '@agents-config/core', version: '1.10.0' };
   await assertNotSuperseded(artifact, async () => { throw npmError('E404', artifact.name); });
+  await assertNotSuperseded(artifact, async () => {
+    throw Object.assign(new Error('npm E404'), {
+      stderr: `npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/${encodeURIComponent(artifact.name)}\n` +
+        `npm error 404  '${artifact.name}@*' is not in this registry.`,
+    });
+  });
   for (const latest of ['1.9.0', '1.10.0', '0.99.0']) {
     await assertNotSuperseded(artifact, async () => JSON.stringify(latest));
   }
