@@ -1,6 +1,6 @@
 {
   "name": "agents-config",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Compatible React entry point for shared AI agent configuration, with Angular and Vue packages available.",
   "author": "Eric Thayer",
   "license": "MIT",
@@ -28,10 +28,12 @@
     "agentic-workflows"
   ],
   "type": "module",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
-    "@agents-config/core": "1.5.0",
-    "@agents-config/react": "1.5.0"
+    "@agents-config/core": "1.6.0",
+    "@agents-config/react": "1.6.0"
   },
   "bin": {
     "agents-init": "bin/agents-init.js",

@@ -1,14 +1,36 @@
 {
   "name": "@agents-config/react",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "React-family configuration and skills for AI coding assistants",
   "type": "module",
   "license": "MIT",
-  "repository": {"type": "git", "url": "git+https://github.com/ericthayer/agents-config.git", "directory": "packages/react"},
-  "exports": {"./preset": "./preset.js", "./package.json": "./package.json"},
-  "bin": {"agents-init": "bin/agents-init.js", "agents-analyze": "bin/agents-analyze.js"},
-  "dependencies": {"@agents-config/core": "1.5.0"},
-  "files": ["bin/", "preset.js", "content/", "README.md", "LICENSE"],
-  "engines": {"node": ">=18.0.0"},
-  "publishConfig": {"access": "public"}
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericthayer/agents-config.git",
+    "directory": "packages/react"
+  },
+  "exports": {
+    "./preset": "./preset.js",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "agents-init": "bin/agents-init.js",
+    "agents-analyze": "bin/agents-analyze.js"
+  },
+  "dependencies": {
+    "@agents-config/core": "1.6.0"
+  },
+  "files": [
+    "bin/",
+    "preset.js",
+    "content/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

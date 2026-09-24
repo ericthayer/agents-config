@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/ericthayer/agents-config/compare/v1.5.0...v1.6.0) (2026-09-24)
+
+
+### Features
+
+* add React, Angular, and Vue agent configuration packages ([#17](https://github.com/ericthayer/agents-config/issues/17)) ([1e7ba98](https://github.com/ericthayer/agents-config/commit/1e7ba98edb3e703257350497b7d6ebccc67749e9))
+
 # Unreleased
 
 ### Added
