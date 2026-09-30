@@ -214,8 +214,13 @@ test('latest preflight accepts absent/equal/older tags but rejects outages and m
   await assertNotSuperseded(artifact, async () => { throw npmError('E404', artifact.name); });
   await assertNotSuperseded(artifact, async () => {
     throw Object.assign(new Error('npm E404'), {
-      stderr: `npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/${encodeURIComponent(artifact.name)}\n` +
-        `npm error 404  '${artifact.name}@*' is not in this registry.`,
+      stderr: `npm error code E404\n` +
+        `npm error 404 Not Found - GET https://registry.npmjs.org/${encodeURIComponent(artifact.name)} - Not found\n` +
+        `npm error 404\n` +
+        `npm error 404  '${artifact.name}@*' is not in this registry.\n` +
+        `npm error 404\n` +
+        'npm error 404 Note that you can also install from a\n' +
+        'npm error 404 tarball, folder, http url, or git url.\n',
     });
   });
   for (const latest of ['1.9.0', '1.10.0', '0.99.0']) {
