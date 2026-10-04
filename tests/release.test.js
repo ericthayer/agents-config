@@ -298,6 +298,42 @@ test('real npm tarballs retain reproducible identity across a mocked publish ret
   assert.equal(registry.size, 5);
 });
 
+test('publish workflow resolves matching release inputs before checkout', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'agents-publish-ref-test-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const workflow = await fs.readFile(new URL('../.github/workflows/publish.yml', import.meta.url), 'utf8');
+  const match = workflow.match(/      - name: Resolve release tag\n        id: release-tag\n        shell: bash\n        run: \|\n((?:          .*\n)+)/);
+  assert.ok(match);
+  assert.ok(match.index < workflow.indexOf('- uses: actions/checkout@'));
+  assert.match(workflow, /ref: \$\{\{ steps\.release-tag\.outputs\.ref \}\}/);
+  const script = match[1].replace(/^          /gm, '');
+  const output = path.join(root, 'output');
+  const environment = path.join(root, 'environment');
+  const run = async (version, ref) => {
+    await fs.writeFile(output, '');
+    await fs.writeFile(environment, '');
+    return runCommand('bash', ['-e', '-o', 'pipefail', '-c', script], {
+      env: { ...process.env, RELEASE_VERSION: version, RELEASE_REF: ref,
+        GITHUB_OUTPUT: output, GITHUB_ENV: environment },
+    });
+  };
+  for (const ref of ['', '1.6.0', 'v1.6.0', 'refs/tags/v1.6.0']) {
+    await run('1.6.0', ref);
+    assert.equal(await fs.readFile(output, 'utf8'), 'ref=refs/tags/v1.6.0\n');
+    assert.equal(await fs.readFile(environment, 'utf8'), 'RELEASE_REF=refs/tags/v1.6.0\n');
+  }
+  for (const [version, ref] of [
+    ['1.6.0', 'main'], ['1.6.0', 'refs/heads/v1.6.0'],
+    ['1.6.0', 'refs/tags/v1.5.0'], ['1.6.0', '1.5.0'],
+    ['1.6.0', 'v1.6.0\nINJECTED=true'], ['1.6.0', '$(echo bad)'],
+    ['', ''], ['01.6.0', ''], ['1.6.0-beta.1', ''], ['1.6.0\nINJECTED=true', ''],
+  ]) {
+    await assert.rejects(run(version, ref), /Command failed/);
+    assert.equal(await fs.readFile(output, 'utf8'), '');
+    assert.equal(await fs.readFile(environment, 'utf8'), '');
+  }
+});
+
 test('release config commits every version source and delegates publishing explicitly', async () => {
   const config = await readJson(new URL('../.releaserc.json', import.meta.url));
   const plugins = config.plugins.map(plugin => Array.isArray(plugin) ? plugin[0] : plugin);

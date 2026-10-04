@@ -173,10 +173,11 @@ GitHub Actions with these inputs:
 | Input | Value |
 |-------|-------|
 | `version` | Released version without `v`, for example `1.6.0` |
-| `ref` | Exact matching tag ref, for example `refs/tags/v1.6.0` |
+| `ref` | Optional matching release tag: `1.6.0`, `v1.6.0`, or `refs/tags/v1.6.0`; defaults to `refs/tags/v<version>` |
 | `commit` | Optional full release commit SHA to verify against the tag |
 
-Use the original release tag, not a branch or newly edited checkout. This is a
+Inputs are normalized to the exact version tag before checkout; branches and
+mismatched tags are rejected. Use the original release tag, not a newly edited checkout. This is a
 real publishing operation: configure the repository's `NPM_TOKEN` secret with
 public publishing permissions for both legacy `agents-config` and the
 `@agents-config` scope, with scope ownership established beforehand.
