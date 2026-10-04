@@ -1,6 +1,6 @@
 {
   "name": "@agents-config/core",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Shared AI agent configuration engine and framework-neutral guidance",
   "type": "module",
   "license": "MIT",

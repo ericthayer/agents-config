@@ -1,6 +1,6 @@
 {
   "name": "@agents-config/angular",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Angular configuration and skills for AI coding assistants",
   "type": "module",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "agents-analyze": "bin/agents-analyze.js"
   },
   "dependencies": {
-    "@agents-config/core": "1.6.0"
+    "@agents-config/core": "1.6.1"
   },
   "files": [
     "bin/",

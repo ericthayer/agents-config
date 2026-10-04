@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/ericthayer/agents-config/compare/v1.6.0...v1.6.1) (2026-10-04)
+
+
+### Bug Fixes
+
+* publish checkout by normalizing release tag inputs ([#21](https://github.com/ericthayer/agents-config/issues/21)) ([7eefa21](https://github.com/ericthayer/agents-config/commit/7eefa21ff2034570bc5496b209ca35f7efdd0665))
+
 # [1.6.0](https://github.com/ericthayer/agents-config/compare/v1.5.0...v1.6.0) (2026-09-24)
 
 

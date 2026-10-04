@@ -1,6 +1,6 @@
 {
   "name": "agents-config",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Compatible React entry point for shared AI agent configuration, with Angular and Vue packages available.",
   "author": "Eric Thayer",
   "license": "MIT",
@@ -32,8 +32,8 @@
     "packages/*"
   ],
   "dependencies": {
-    "@agents-config/core": "1.6.0",
-    "@agents-config/react": "1.6.0"
+    "@agents-config/core": "1.6.1",
+    "@agents-config/react": "1.6.1"
   },
   "bin": {
     "agents-init": "bin/agents-init.js",
