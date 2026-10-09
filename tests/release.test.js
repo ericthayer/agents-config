@@ -189,6 +189,42 @@ test('all local artifacts and registry identities are preflighted before ordered
   assert.deepEqual(fixture.calls.slice(15), releasePackages.map(pkg => `publish:${pkg.name}`));
 });
 
+test('publish E404 explains scope authorization and stops without publishing dependents', async t => {
+  for (const prefix of ['npm error', 'npm ERR!']) {
+    const fixture = await publishFixture(t);
+    const failure = Object.assign(new Error('npm publish failed'), {
+      stderr: `${prefix} code E404\n${prefix} 404 Not Found - PUT https://registry.npmjs.org/@agents-config%2fcore - Not found`,
+    });
+    let tarball;
+    const run = async (command, args, options) => {
+      if (args[0] !== 'publish') return fixture.run(command, args, options);
+      assert.equal(tarball, undefined, 'no subsequent package may be published');
+      tarball = args[1];
+      throw failure;
+    };
+    await assert.rejects(publishPackages({ ...fixture, version: '1.5.0', run }), error => {
+      assert.match(error.message, /@agents-config\/core@1\.5\.0 \(E404\)/);
+      assert.match(error.message, /ownership.*NPM_TOKEN read\/write access to the scope/);
+      assert.match(error.message, /initial publication before trusted publishing/);
+      assert.equal(error.cause, failure);
+      assert.equal(error.stderr, failure.stderr);
+      return true;
+    });
+    assert.equal(fixture.published.size, 0);
+    await assert.rejects(fs.access(tarball), { code: 'ENOENT' });
+  }
+});
+
+test('non-E404 publish failures retain the original error', async t => {
+  const fixture = await publishFixture(t);
+  const failure = Object.assign(new Error('network failure'), { stderr: 'npm error code ECONNRESET' });
+  const run = async (command, args, options) => {
+    if (args[0] === 'publish') throw failure;
+    return fixture.run(command, args, options);
+  };
+  await assert.rejects(publishPackages({ ...fixture, version: '1.5.0', run }), error => error === failure);
+});
+
 test('partial release retry skips identical versions and resumes in dependency order', async t => {
   const fixture = await publishFixture(t);
   fixture.failOn('@agents-config/angular');

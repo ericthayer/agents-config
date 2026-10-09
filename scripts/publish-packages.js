@@ -146,8 +146,22 @@ export async function publishPackages({
     }
     for (const artifact of pending) {
       console.log(`Publishing ${artifact.name}@${version}`);
-      await run('npm', ['publish', artifact.filename, '--ignore-scripts', '--access', 'public',
-        '--registry', registry, '--tag', 'latest']);
+      try {
+        await run('npm', ['publish', artifact.filename, '--ignore-scripts', '--access', 'public',
+          '--registry', registry, '--tag', 'latest']);
+      } catch (error) {
+        if (/\bnpm (?:error|ERR!) code E404\b/.test(error.stderr ?? '')) {
+          throw Object.assign(new Error(
+            `npm rejected publication of ${artifact.name}@${version} (E404). ` +
+            'A publish E404 is not a missing-version lookup: verify npm package/scope ownership ' +
+            'and NPM_TOKEN read/write access to the scope, not just the legacy agents-config package. ' +
+            'New packages require an authorized initial publication before trusted publishing can be configured. ' +
+            'See CONTRIBUTING.md: Publishing Authorization.',
+            { cause: error },
+          ), { stderr: error.stderr });
+        }
+        throw error;
+      }
     }
     return pending.map(artifact => artifact.name);
   } finally {
