@@ -334,6 +334,25 @@ test('publish workflow resolves matching release inputs before checkout', async 
   }
 });
 
+test('publish authentication supports OIDC for manual and reusable workflows', async () => {
+  const publish = await fs.readFile(new URL('../.github/workflows/publish.yml', import.meta.url), 'utf8');
+  const release = await fs.readFile(new URL('../.github/workflows/release.yml', import.meta.url), 'utf8');
+  for (const workflow of [publish, release]) {
+    assert.match(workflow, /  publish:\n[\s\S]*?    permissions:\n      contents: read\n      id-token: write\n/);
+  }
+  assert.match(publish, /    secrets:\n      NPM_TOKEN:\n        required: false/);
+  assert.match(publish, /NODE_AUTH_TOKEN: \$\{\{ secrets\.NPM_TOKEN \}\}/);
+  assert.match(release, /NPM_TOKEN: \$\{\{ secrets\.NPM_TOKEN \}\}/);
+  const install = publish.match(/run: npm install --global npm@(\d+)\.(\d+)\.(\d+)/);
+  assert.ok(install);
+  const [major, minor, patch] = install.slice(1).map(Number);
+  assert.ok(major > 11 || (major === 11 && (minor > 5 || (minor === 5 && patch >= 1))),
+    'npm must support trusted publishing');
+  assert.ok(install.index > publish.indexOf('- uses: actions/setup-node@'));
+  assert.ok(install.index < publish.indexOf('- run: npm ci'));
+  assert.ok(install.index < publish.indexOf('- name: Preflight all artifacts'));
+});
+
 test('release config commits every version source and delegates publishing explicitly', async () => {
   const config = await readJson(new URL('../.releaserc.json', import.meta.url));
   const plugins = config.plugins.map(plugin => Array.isArray(plugin) ? plugin[0] : plugin);

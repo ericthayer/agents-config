@@ -51,6 +51,9 @@ jobs:
   publish:
     needs: release
     if: needs.release.outputs.version != ''
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/publish.yml
     with:
       version: ${{ needs.release.outputs.version }}

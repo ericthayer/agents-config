@@ -165,6 +165,32 @@ publication separately requires ownership of the `@agents-config` npm
 organization and publishing authorization for every package, including legacy
 `agents-config`. Keep the legacy React package supported; do not deprecate it.
 
+### Publishing Authorization
+
+Prefer [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/)
+instead of a long-lived token. For **each of the five packages**, configure a
+GitHub Actions trusted publisher in its npm settings with owner `ericthayer`,
+repository `agents-config`, and permission to publish directly. Use workflow
+filename `release.yml` for automatic releases: npm checks the **calling**
+workflow when a reusable workflow is invoked. For a direct manual retry, use
+`publish.yml` instead. npm allows one trusted publisher per package, so switch
+the configured filename before using the other entry point, then restore it
+afterward. No GitHub environment is used.
+
+Both publish jobs grant `id-token: write`, and the publishing workflow installs
+a pinned npm version supporting OIDC (npm 11.5.1 or later). With trusted
+publishers configured, the `NPM_TOKEN` secret is not required.
+
+For initial publication of packages that do not yet exist on npm, or as a
+token-based fallback, set the repository's `NPM_TOKEN` secret to an unexpired
+**granular access token** with read/write access to all five packages (including
+the `@agents-config` scope) and **Bypass 2FA** enabled. Package publishing
+settings must allow token-based publishing with that bypass; a policy requiring
+2FA and disallowing tokens cannot use this fallback. A token without the bypass
+causes `npm publish` to fail with `EOTP` in non-interactive Actions jobs.
+Bootstrap missing packages with this authorization, then configure their
+trusted publishers. Do not add an OTP to workflow files or disable account 2FA.
+
 ### Retrying Publication
 
 For an existing release, manually run **Publish to npm** (`publish.yml`) from
@@ -178,9 +204,8 @@ GitHub Actions with these inputs:
 
 Inputs are normalized to the exact version tag before checkout; branches and
 mismatched tags are rejected. Use the original release tag, not a newly edited checkout. This is a
-real publishing operation: configure the repository's `NPM_TOKEN` secret with
-public publishing permissions for both legacy `agents-config` and the
-`@agents-config` scope, with scope ownership established beforehand.
+real publishing operation: configure trusted publishing for `publish.yml` or
+the token fallback described above, with scope ownership established beforehand.
 
 The workflow checks out that exact tag and validates HEAD and version before
 installing. It runs `prepare:packages`, `npm test`, and `test:packages`, then
