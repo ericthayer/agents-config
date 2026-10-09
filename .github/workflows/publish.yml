@@ -16,7 +16,7 @@ on:
         required: true
     secrets:
       NPM_TOKEN:
-        required: true
+        required: false
   workflow_dispatch:
     inputs:
       version:
@@ -38,6 +38,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     # Job-level concurrency covers both reusable calls and manual retries.
     concurrency:
       group: agents-config-npm-publish
@@ -75,6 +78,9 @@ jobs:
           node-version: '22'
           cache: npm
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Install pinned npm with trusted publishing support
+        run: npm install --global npm@11.21.0
 
       - name: Use current publish tooling
         run: git checkout --force "$GITHUB_SHA" -- scripts/publish-packages.js
