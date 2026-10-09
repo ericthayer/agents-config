@@ -191,6 +191,33 @@ causes `npm publish` to fail with `EOTP` in non-interactive Actions jobs.
 Bootstrap missing packages with this authorization, then configure their
 trusted publishers. Do not add an OTP to workflow files or disable account 2FA.
 
+#### First publication of the scoped packages
+
+An existing `agents-config` release (such as `1.5.0`) does not establish ownership
+of the separate npm `@agents-config` organization or authorize its packages.
+Before retrying a release that introduces the scoped packages:
+
+1. Create or confirm ownership of the npm `agents-config` organization and ensure
+   the account issuing the token can create and publish packages in that scope.
+2. Configure the granular token's **Packages and scopes** permissions with
+   **Read and write** access to the entire `@agents-config` scope, including new
+   packages, plus the existing unscoped `agents-config` package. Access only to
+   the legacy package is insufficient; organization-management permissions alone
+   do not grant package publishing access.
+3. Enable **Bypass 2FA**, replace the GitHub repository's `NPM_TOKEN` secret with
+   that token, and retry **Publish to npm** for the original release version.
+4. After the packages exist, configure their trusted publishers as described
+   above.
+
+A registry `GET` returning package-not-found can be expected before initial
+publication. An `E404` on the publish **PUT**, however, is a failed publication,
+not permission to skip the package. Check scope ownership and token grants;
+changing the release version or accepting the error cannot fix authorization.
+npm attempts OIDC first and can fall back to `NPM_TOKEN` if the exchange fails,
+so also check the trusted publisher's workflow filename for existing packages.
+These npm permissions and GitHub secrets must be configured by a maintainer;
+repository code cannot grant them.
+
 ### Retrying Publication
 
 For an existing release, manually run **Publish to npm** (`publish.yml`) from
