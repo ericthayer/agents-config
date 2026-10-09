@@ -126,6 +126,13 @@ test('registry only treats explicit E404 as absence', async () => {
     Object.assign(new Error('timeout'), { stdout: 'not json' })]) {
     await assert.rejects(registryStatus(artifact, async () => { throw error; }));
   }
+  const modern = `npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/${encodeURIComponent(artifact.name)} - Not found\nnpm error 404\nnpm error 404  The requested resource '${artifact.name}@${artifact.version}' could not be found or you do not have permission to access it.\n`;
+  assert.equal(await registryStatus(artifact, async () => { throw Object.assign(new Error('npm E404'), { stderr: modern }); }), 'absent');
+  assert.equal(await registryStatus(artifact, async () => {
+    throw Object.assign(new Error('npm E404'), { stderr: JSON.stringify({ error: { code: 'E404', summary: '404 Not Found', detail: `The requested resource '${artifact.name}@${artifact.version}' could not be found or you do not have permission to access it.` } }) });
+  }), 'absent');
+  await assert.rejects(registryStatus(artifact, async () => { throw Object.assign(new Error('npm E404'), { stderr: modern.replace(`${artifact.name}@${artifact.version}`, `other-package@${artifact.version}`) }); }));
+  await assert.rejects(registryStatus(artifact, async () => { throw Object.assign(new Error('npm E500'), { stderr: `npm error code E500\nnpm error '${artifact.name}@${artifact.version}' could not be found` }); }));
   await assert.rejects(registryStatus(artifact, async () => '{}'), /identity/i);
   await assert.rejects(registryStatus(artifact, async () => 'not json'));
   assert.equal(await registryStatus(artifact, async () => JSON.stringify({ shasum: artifact.shasum })), 'identical');

@@ -16,11 +16,11 @@ function hasExactRegistrySpec(spec, text) {
   return new RegExp(`(?:['"\`])${exact}${wildcard}(?:['"\`])|(?:^|\\s)${exact}${wildcard}(?=\\s|$)`).test(text);
 }
 
-function isRegistryMissingPackageText(spec, text) {
+function isRegistryMissingPackageText(spec, text, codeKnown = false) {
   return typeof text === 'string' &&
-    /\bE404\b/.test(text) &&
+    (codeKnown || /\bE404\b/.test(text)) &&
     hasExactRegistrySpec(spec, text) &&
-    /is not in this registry/i.test(text);
+    /is not in this registry|could not be found/i.test(text);
 }
 
 function isRegistryMissingPackage(spec, error) {
@@ -30,7 +30,7 @@ function isRegistryMissingPackage(spec, error) {
       const details = JSON.parse(stream);
       if (details?.error?.code === 'E404' &&
           [details.error.summary, details.error.detail, details.error.message]
-            .some(text => isRegistryMissingPackageText(spec, text))) {
+            .some(text => isRegistryMissingPackageText(spec, text, true))) {
         return true;
       }
     } catch {
